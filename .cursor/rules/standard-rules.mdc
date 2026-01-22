@@ -1,0 +1,146 @@
+---
+alwaysApply: false
+---
+
+# Cursor Rules — Crew/Team Scheduler (Next.js + TypeScript)
+
+## 1) Project intent
+- Build a scheduling UI (Gantt-like) to assign resources to teams for specific time periods.
+- Teams can be assembled/disassembled; assignments must remain consistent and auditable.
+- High API call volume: prioritize caching, deduplication, and predictable state transitions.
+
+## 2) Tech constraints
+- Next.js App Router with TypeScript (strict).
+- Prefer functional components, no class components.
+- Prefer server components by default; use `"use client"` only for interactive UI (scheduler, drag/drop, forms).
+- All API access must go through a single client layer (no ad-hoc fetch scattered across components).
+
+## 3) Folder structure expectations
+- `app/` pages are thin: compose screens from feature modules.
+- `src/features/<feature>/` contains UI + hooks + domain logic per feature.
+- `src/lib/api/` contains API client, request helpers, and typed endpoints.
+- `src/lib/query/` contains TanStack Query setup, query keys, cache helpers.
+- `src/domain/` contains domain types, invariants, and pure functions.
+- `src/components/` for shared presentational components only.
+
+## 4) Domain model rules (must follow)
+- Canonical entities:
+  - Resource: person/crew member/tool with availability windows and capabilities.
+  - Team: logical container with members; can exist with 0..n resources.
+  - Assignment: immutable record linking {resourceId, teamId, start, end, role?}.
+- Do not store derived data in the backend or client if it can be computed deterministically.
+- Time handling:
+  - Store times in ISO strings with timezone awareness (prefer UTC on API boundary).
+  - UI can render in local timezone, but conversions must be explicit and centralized.
+- Every assignment mutation must validate:
+  - start < end
+  - no overlaps for same resource (unless explicitly allowed by policy flag)
+  - team existence and resource existence
+  - optional: skill/role compatibility
+
+## 5) API interaction rules (high volume)
+- Use TanStack Query for all server state:
+  - `useQuery` for reads
+  - `useMutation` for changes
+- Must define query keys in `src/lib/query/keys.ts` and reuse them everywhere.
+- Prefer optimistic updates for drag/drop and resize actions:
+  - Update cache first
+  - Roll back on error
+  - Invalidate minimal keys after success (avoid global invalidations)
+- Batch or debounce:
+  - For rapid drag operations, debounce “preview” updates; commit only on drop.
+  - Never fire a mutation on every mousemove.
+- Error handling:
+  - Always surface actionable errors (conflict, validation, permissions).
+  - For conflicts, include who/what is conflicting and the time range.
+
+## 6) UI rules (scheduler + DnD)
+- Scheduler component must be isolated:
+  - `<SchedulerBoard />` is a client component
+  - It receives data as props or from feature-level hooks
+  - Keep it free of direct API calls; use callbacks that call mutations in hooks
+- Drag/drop semantics:
+  - Drag resource → drop onto team/time range creates/updates assignment.
+  - Drag assignment → move changes time/team.
+  - Resize assignment → changes time range.
+- All operations must support cancel/rollback.
+- Keep UI responsive:
+  - Use virtualization for long resource lists and dense timelines where possible.
+  - Avoid rendering large grids without memoization.
+- Accessibility:
+  - Keyboard navigation for selecting resources/assignments where feasible.
+  - Use semantic labels and aria attributes.
+
+## 7) State rules (avoid untraceable state)
+- Server state lives in TanStack Query cache.
+- UI-only state:
+  - Selected team/resource, hovered range, open dialogs: local state or Zustand.
+- Never duplicate server state into component state unless necessary for editing forms.
+- If you must derive view models (e.g., group assignments by team), do it via memoized selectors.
+
+## 8) TypeScript rules
+- `strict: true`.
+- No `any`. If needed temporarily, use `unknown` with runtime narrowing and TODO.
+- Prefer discriminated unions for API error responses.
+- Export domain types from `src/domain/types.ts` and reuse across API and UI.
+
+## 9) Coding patterns and quality gates
+- Pure domain logic must be in `src/domain/`:
+  - overlap detection
+  - snapping rules
+  - availability checks
+  - team assembly/disassembly logic
+- UI components should be mostly presentational; side effects go to hooks.
+- Each mutation has:
+  - input schema validation (zod or equivalent)
+  - optimistic update logic
+  - rollback logic
+  - minimal invalidations
+- Logging:
+  - Do not console.log in production code.
+  - If telemetry is needed, route through `src/lib/telemetry`.
+
+## 10) Security and authorization
+- Assume API calls require auth.
+- Do not expose sensitive fields in client components unless needed.
+- Permission checks:
+  - UI must gracefully handle 403 (read-only states, disabled drag/drop).
+- Never trust client validation alone; server remains source of truth.
+
+## 11) Performance rules
+- Avoid N+1 API calls:
+  - Prefer endpoints that return teams + assignments in one payload when feasible.
+- Use pagination for resource lists.
+- Use `staleTime` and cache times appropriate to UX:
+  - relatively longer for resource catalog
+  - shorter for live assignments
+- Avoid excessive re-renders:
+  - memoize rows/cells
+  - use stable callbacks
+  - keep scheduler props stable
+
+## 12) Testing expectations
+- Domain logic: unit tests mandatory (overlaps, snapping, validations).
+- Key flows: integration tests for:
+  - create assignment via drop
+  - move assignment
+  - resize assignment
+  - conflict handling
+- Use mocked API layer for tests; do not hit real endpoints.
+
+## 13) Output format expectations for Cursor
+When asked to implement something:
+- Provide:
+  - file paths
+  - complete code blocks per file
+  - minimal but sufficient comments
+- Do not invent APIs: if an endpoint is unknown, create a typed placeholder in `src/lib/api/` and clearly mark it.
+- Prefer small PR-sized changes; avoid massive rewrites.
+
+## 14) Default libraries (unless project states otherwise)
+- TanStack Query for server state.
+- Zod for input validation and parsing API responses.
+- date-fns or Luxon for time operations (choose one; do not mix).
+- dnd-kit for drag/drop unless scheduler library provides native DnD.
+
+End of rules.

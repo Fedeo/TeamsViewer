@@ -1,0 +1,440 @@
+.board {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg-primary);
+}
+
+.timeline {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineHeader {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.teamLabelSpacer {
+  width: 220px;
+  min-width: 220px;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.daysHeader {
+  display: flex;
+}
+
+.dayHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+  border-right: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+}
+
+.dayHeader.weekend {
+  background: var(--bg-tertiary);
+}
+
+.dayHeader.today {
+  background: var(--accent-glow);
+}
+
+.dayName {
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.dayNumber {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dayHeader.today .dayNumber {
+  color: var(--accent-primary);
+}
+
+.teamsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Team Section (collapsible container) */
+.teamSection {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Team Header Row */
+.teamRow {
+  display: flex;
+  min-height: 56px;
+  background: var(--bg-secondary);
+}
+
+.teamLabel {
+  width: 220px;
+  min-width: 220px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-subtle);
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+/* Expand/Collapse Button */
+.expandButton {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.expandButton:hover {
+  background: var(--accent-glow);
+  color: var(--accent-primary);
+}
+
+.expandButton svg {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--transition-fast);
+}
+
+.expandButton.expanded svg {
+  transform: rotate(45deg);
+}
+
+.expandButton.expanded {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.teamColor {
+  width: 4px;
+  height: 32px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.teamName {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.memberCount {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.teamTimeline {
+  position: relative;
+  display: flex;
+  min-height: 56px;
+  transition: background var(--transition-fast);
+}
+
+.teamTimeline.dropTarget {
+  background: var(--accent-glow);
+}
+
+.dayCell {
+  height: 100%;
+  border-right: 1px solid var(--border-subtle);
+  background: transparent;
+}
+
+.dayCell.weekend {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.dayCell.today {
+  background: var(--accent-glow);
+}
+
+/* Members Container (expanded view) */
+.membersContainer {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+/* Member Row */
+.memberRow {
+  display: flex;
+  min-height: 52px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.memberLabel {
+  width: 220px;
+  min-width: 220px;
+  padding: 8px 16px 8px 52px; /* Indent to align with team name */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-subtle);
+  position: sticky;
+  left: 0;
+  z-index: 4;
+}
+
+.memberAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.memberName {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.memberDates {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.memberTimeline {
+  position: relative;
+  display: flex;
+  min-height: 52px;
+}
+
+.memberCell {
+  background: var(--bg-primary);
+}
+
+/* Empty members state */
+.emptyMembers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.emptyMembers span {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Assignment bars */
+.assignmentBar {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  border-radius: 6px;
+  border: 2px solid;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  overflow: visible;
+}
+
+.assignmentBar:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.assignmentBar.resizing {
+  cursor: ew-resize;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+}
+
+.assignmentBar:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Resize handles */
+.resizeHandleLeft,
+.resizeHandleRight {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 12px;
+  cursor: ew-resize;
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+  z-index: 10;
+}
+
+.resizeHandleLeft {
+  left: -6px;
+  border-radius: 4px 0 0 4px;
+}
+
+.resizeHandleRight {
+  right: -6px;
+  border-radius: 0 4px 4px 0;
+}
+
+.assignmentBar:hover .resizeHandleLeft,
+.assignmentBar:hover .resizeHandleRight {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.resizeHandleLeft:hover,
+.resizeHandleRight:hover {
+  background: var(--accent-primary) !important;
+  opacity: 1;
+}
+
+.assignmentBar.resizing .resizeHandleLeft,
+.assignmentBar.resizing .resizeHandleRight {
+  opacity: 1;
+  background: var(--accent-primary);
+}
+
+/* Team Leader Styles */
+.teamLeaderBar {
+  border-width: 2px;
+  border-style: solid;
+}
+
+.teamLeaderIcon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+.teamLeaderIcon svg {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.leaderBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  color: #f59e0b;
+  vertical-align: middle;
+}
+
+.leaderBadge svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Team Name Row */
+.teamNameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Warning Badge (next to team name) */
+.warningBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f59e0b;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.warningBadge svg {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Team Section Warning State */
+.teamSection.hasWarning {
+  border-left: 3px solid #f59e0b;
+}
+
+/* Team Leader Warning Banner */
+.leaderWarning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 10px 52px;
+  background: rgba(245, 158, 11, 0.1);
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.leaderWarning svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.warningContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.warningContent strong {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.warningContent span {
+  font-size: 0.75rem;
+  color: #fbbf24;
+}

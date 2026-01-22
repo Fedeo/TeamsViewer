@@ -1,0 +1,32 @@
+I need to build a sort of GANTT chart to build crews/teams. 
+The app needs to select resources from a list and drag and drop them for a specific time period in a team. 
+Teams can be assembled and dissembled.
+The UI should looks like this:
+ - a menu on top
+ - a left panel containing the list of resources that can be added to a teams
+ - a main panel similar to a gantt chart with all teams assembled
+ - under each team there should be the resources that belongs to that team for the specific period of time
+ - when dragging and dropping the resource on a team it should be asked the from date to date where this will belong on the team
+ - it should be possible to adjust the dates a resource belongs to a team dragging the availability (longer or shorter)
+
+
+In the future the resources and teams will be retrieved using rest api from IFS Cloud. Meanwhile can you create a facade or some mock api with fake data for:
+getTechnicians(): to retrieve all technicians for the specific resource group (8 english name as mock data to start)
+getTeams(): to retrieve all Teams (Team1, Team2 as mock data to start)
+getTeam(teamId): to retrieve the Team composition for each team (with list of resourceId, resourceName, resourceSurname, start date, end date)
+
+On the left panel add the list of resources as retrieved from getTechnicians(), and link the search above to the list underneath in a way like while you add text it filters resources
+
+Adjust the Gantt with the teams. It would be nice to see visually for each team the members for a specific date period. On the main panel please add a + button close to them so that, when clicked, it shows underneat the members of the team (one by one) for the period they belongs to that team
+
+I would like also to be able to change the assignment period of a resource to a team from the gantt shortening or increasing the length of the bar of the resource in the main panel
+
+I would also like to adjust the data of the membership to a team when double clicking on the membership bar in the gantt. In that case it should open the same window that is used when doing a drag&drop from the left panel to readjuste dates and other parameters 
+
+In the composition/membership of a resources to a team we must add a new attribute for 'Team Leader'. Each team must have only of Team Leader per period of time (in the same period there cannot be 2 or more Team Leader). The app must show an error/exception when there is no Team Leader within a specific period of time and must not allow to add a second team leader. In the gantt bar, for the days when a resource is a Team Leader, there should be an icon to show that. 
+
+It should be possible for the same resource to have two independent periods on the gantt for the same team. So if I drag&drop a technician to a team for a different period of time and he already belongs to that team the app doesn't need to add a new row for it must show the resource only once and have two colored gantt bar with some gap in between if there are days where the technician is not assigned to that team.
+
+keep the star for team leaders only on the gantt because there can be multiple team leaders according to the different time period
+
+it would be good to add on top of the gantt (on the right of the dates selector) a zoom in/out capability to shrink or extend the gantt 
