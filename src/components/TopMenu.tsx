@@ -5,11 +5,37 @@ import { useUIStore, ZOOM_LEVELS } from '@/lib/store/ui-store';
 import styles from './TopMenu.module.css';
 
 export function TopMenu() {
-  const { viewRange, navigateWeeks, zoomIndex, zoomIn, zoomOut, resetZoom } = useUIStore();
+  const { 
+    viewRange, 
+    navigateWeeks, 
+    zoomIndex, 
+    zoomIn, 
+    zoomOut, 
+    resetZoom,
+    hasUnsavedChanges,
+    isSyncing,
+    hasValidationWarnings,
+    startSync,
+    finishSync,
+  } = useUIStore();
 
   const canZoomIn = zoomIndex < ZOOM_LEVELS.length - 1;
   const canZoomOut = zoomIndex > 0;
   const zoomPercent = Math.round((ZOOM_LEVELS[zoomIndex] / 48) * 100);
+
+  const canPush = hasUnsavedChanges && !isSyncing && !hasValidationWarnings;
+
+  const handlePushToCloud = async () => {
+    if (!canPush) return;
+    
+    startSync();
+    
+    // TODO: Implement actual IFS Cloud sync
+    // For now, simulate a network request
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    
+    finishSync();
+  };
 
   return (
     <header className={styles.header}>
@@ -93,6 +119,40 @@ export function TopMenu() {
           end: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000),
         })}>
           Today
+        </button>
+
+        <div className={styles.divider} />
+
+        {/* Push to IFS Cloud Button */}
+        <button 
+          className={`${styles.pushButton} ${canPush ? styles.hasChanges : ''} ${isSyncing ? styles.syncing : ''} ${hasValidationWarnings ? styles.hasWarnings : ''}`}
+          onClick={handlePushToCloud}
+          disabled={!canPush}
+          title={
+            hasValidationWarnings 
+              ? 'Cannot push: Fix team leader warnings first' 
+              : hasUnsavedChanges 
+                ? 'Push changes to IFS Cloud' 
+                : 'No changes to push'
+          }
+        >
+          {isSyncing ? (
+            <>
+              <svg className={styles.spinner} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12a9 9 0 11-6.219-8.56" />
+              </svg>
+              <span>Syncing...</span>
+            </>
+          ) : (
+            <>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+                <path d="M5 19h14" />
+              </svg>
+              <span>Push to IFS Cloud</span>
+              {hasUnsavedChanges && <span className={styles.changeBadge} />}
+            </>
+          )}
         </button>
       </div>
     </header>

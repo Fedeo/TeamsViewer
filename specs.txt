@@ -30,3 +30,19 @@ It should be possible for the same resource to have two independent periods on t
 keep the star for team leaders only on the gantt because there can be multiple team leaders according to the different time period
 
 it would be good to add on top of the gantt (on the right of the dates selector) a zoom in/out capability to shrink or extend the gantt 
+
+Close to the TeamsViewer top right add a button 'Push to IFS Cloud'. This button will be used in the future to save changes to IFS Cloud. It should be enabled only when some change from the last time have been made to the teams, otherwise it should be disabled. 
+
+color the button 'Push to IFS Cloud' with the ifs purple color when enabled.
+
+if there is any error/warning that there are periods without team leader do not enable the button 'Push to IFS Cloud'
+
+a tecnician cannot belong to different teams within an overlapping  period of time. For such cases it should be possible to save the membership and a pop up warning should be given to the user 'Resource already working in {TeamX} within this time period'
+
+there should be no "assign anyway" option when a technician belongs to 2 teams
+
+when I click on an assignment on the gantt and click delete button or right click on that a delete option should appear so that the assignment block is deleted/removed from the gannt. If that was the only assignment for the technician also the technician should be removed from the team.
+
+It should also be possible to create new Team adding a 'New Team' button. Before creating code suggest a good place in the Ui where this could be located. Located bottom right of the GANTT.
+
+When adding a new technician to a team and saving the membership the Team should be automatically expanded.

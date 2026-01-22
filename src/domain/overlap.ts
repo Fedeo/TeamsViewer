@@ -59,3 +59,26 @@ export function canCreateAssignment(
     conflicts,
   };
 }
+
+/**
+ * Find overlapping assignments for a resource in OTHER teams
+ */
+export function findCrossTeamOverlaps(
+  resourceId: string,
+  teamId: string,
+  start: Date,
+  end: Date,
+  existingAssignments: Assignment[],
+  excludeAssignmentId?: string
+): Assignment[] {
+  return existingAssignments.filter((assignment) => {
+    if (assignment.resourceId !== resourceId) return false;
+    if (assignment.teamId === teamId) return false; // Same team is OK
+    if (excludeAssignmentId && assignment.id === excludeAssignmentId) return false;
+    
+    const assignmentStart = new Date(assignment.start);
+    const assignmentEnd = new Date(assignment.end);
+    
+    return rangesOverlap(start, end, assignmentStart, assignmentEnd);
+  });
+}

@@ -29,6 +29,14 @@ interface UIState {
   zoomIndex: number;
   dayWidth: ZoomLevel;
 
+  // Sync state
+  hasUnsavedChanges: boolean;
+  isSyncing: boolean;
+  lastSyncedAt: Date | null;
+
+  // Validation state
+  hasValidationWarnings: boolean;
+
   // Actions
   setSelectedTeam: (id: string | null) => void;
   setSelectedResource: (id: string | null) => void;
@@ -41,6 +49,10 @@ interface UIState {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
+  markAsChanged: () => void;
+  startSync: () => void;
+  finishSync: () => void;
+  setValidationWarnings: (hasWarnings: boolean) => void;
 }
 
 const today = new Date();
@@ -60,6 +72,10 @@ export const useUIStore = create<UIState>((set) => ({
   viewRange: defaultRange,
   zoomIndex: DEFAULT_ZOOM_INDEX,
   dayWidth: ZOOM_LEVELS[DEFAULT_ZOOM_INDEX],
+  hasUnsavedChanges: false,
+  isSyncing: false,
+  lastSyncedAt: null,
+  hasValidationWarnings: false,
 
   setSelectedTeam: (id) => set({ selectedTeamId: id }),
   setSelectedResource: (id) => set({ selectedResourceId: id }),
@@ -124,4 +140,20 @@ export const useUIStore = create<UIState>((set) => ({
       zoomIndex: DEFAULT_ZOOM_INDEX,
       dayWidth: ZOOM_LEVELS[DEFAULT_ZOOM_INDEX],
     }),
+
+  markAsChanged: () =>
+    set({ hasUnsavedChanges: true }),
+
+  startSync: () =>
+    set({ isSyncing: true }),
+
+  finishSync: () =>
+    set({
+      isSyncing: false,
+      hasUnsavedChanges: false,
+      lastSyncedAt: new Date(),
+    }),
+
+  setValidationWarnings: (hasWarnings) =>
+    set({ hasValidationWarnings: hasWarnings }),
 }));

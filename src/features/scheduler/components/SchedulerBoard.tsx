@@ -5,6 +5,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { format, eachDayOfInterval, isWeekend, isToday, differenceInDays, startOfDay, addDays } from 'date-fns';
 import type { Team, Assignment, Resource, TimeRange } from '@/domain/types';
 import { findTeamLeaderGaps, formatGapPeriod } from '@/domain/teamLeaderValidation';
+import { useUIStore } from '@/lib/store/ui-store';
 import styles from './SchedulerBoard.module.css';
 
 interface SchedulerBoardProps {
@@ -15,6 +16,15 @@ interface SchedulerBoardProps {
   dayWidth: number;
   onAssignmentDoubleClick?: (assignment: Assignment) => void;
   onAssignmentResize?: (id: string, newStart: string, newEnd: string) => void;
+  onAssignmentDelete?: (assignmentId: string) => void;
+  autoExpandTeamId?: string | null;
+}
+
+// Context menu state
+interface ContextMenu {
+  x: number;
+  y: number;
+  assignmentId: string;
 }
 
 export function SchedulerBoard({
@@ -25,8 +35,72 @@ export function SchedulerBoard({
   dayWidth,
   onAssignmentDoubleClick,
   onAssignmentResize,
+  onAssignmentDelete,
+  autoExpandTeamId,
 }: SchedulerBoardProps) {
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
+  const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null);
+
+  // Auto-expand team when autoExpandTeamId changes
+  const prevAutoExpandRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (autoExpandTeamId && autoExpandTeamId !== prevAutoExpandRef.current) {
+      prevAutoExpandRef.current = autoExpandTeamId;
+      setExpandedTeams((prev) => {
+        const next = new Set(prev);
+        next.add(autoExpandTeamId);
+        return next;
+      });
+    }
+  }, [autoExpandTeamId]);
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null);
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [contextMenu]);
+
+  const handleContextMenu = useCallback((e: React.MouseEvent, assignmentId: string) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, assignmentId });
+  }, []);
+
+  const handleDeleteFromContext = useCallback(() => {
+    if (contextMenu && onAssignmentDelete) {
+      onAssignmentDelete(contextMenu.assignmentId);
+    }
+    setContextMenu(null);
+  }, [contextMenu, onAssignmentDelete]);
+
+  // Check for team leader gaps across all teams
+  // Memoize based on stringified keys to prevent unnecessary recalculations
+  const teamIds = teams.map(t => t.id).join(',');
+  const assignmentKeys = assignments.map(a => `${a.id}:${a.start}:${a.end}:${a.isTeamLeader}`).join(',');
+  const viewRangeKey = `${viewRange.start.getTime()}-${viewRange.end.getTime()}`;
+
+  const hasAnyWarnings = useMemo(() => {
+    if (teams.length === 0) return false;
+    for (const team of teams) {
+      const gaps = findTeamLeaderGaps(team.id, assignments, viewRange);
+      if (gaps.length > 0) {
+        return true;
+      }
+    }
+    return false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamIds, assignmentKeys, viewRangeKey]);
+
+  // Update store when warning state changes
+  const prevWarningsRef = useRef<boolean | null>(null);
+  useEffect(() => {
+    if (prevWarningsRef.current !== hasAnyWarnings) {
+      prevWarningsRef.current = hasAnyWarnings;
+      useUIStore.getState().setValidationWarnings(hasAnyWarnings);
+    }
+  }, [hasAnyWarnings]);
 
   const days = useMemo(
     () => eachDayOfInterval({ start: viewRange.start, end: viewRange.end }),
@@ -99,12 +173,31 @@ export function SchedulerBoard({
               viewRange={viewRange}
               onAssignmentDoubleClick={onAssignmentDoubleClick}
               onAssignmentResize={onAssignmentResize}
+              onAssignmentDelete={onAssignmentDelete}
+              onContextMenu={handleContextMenu}
               isExpanded={expandedTeams.has(team.id)}
               onToggleExpand={() => toggleTeamExpanded(team.id)}
             />
           ))}
         </div>
       </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          className={styles.contextMenu}
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button className={styles.contextMenuItem} onClick={handleDeleteFromContext}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+              <path d="M10 11v6M14 11v6" />
+            </svg>
+            Delete Assignment
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -118,6 +211,8 @@ interface TeamSectionProps {
   viewRange: TimeRange;
   onAssignmentDoubleClick?: (assignment: Assignment) => void;
   onAssignmentResize?: (id: string, newStart: string, newEnd: string) => void;
+  onAssignmentDelete?: (assignmentId: string) => void;
+  onContextMenu?: (e: React.MouseEvent, assignmentId: string) => void;
   isExpanded: boolean;
   onToggleExpand: () => void;
 }
@@ -131,6 +226,8 @@ function TeamSection({
   viewRange,
   onAssignmentDoubleClick,
   onAssignmentResize,
+  onAssignmentDelete,
+  onContextMenu,
   isExpanded,
   onToggleExpand,
 }: TeamSectionProps) {
@@ -257,6 +354,8 @@ function TeamSection({
                 viewRange={viewRange}
                 onAssignmentDoubleClick={onAssignmentDoubleClick}
                 onAssignmentResize={onAssignmentResize}
+                onAssignmentDelete={onAssignmentDelete}
+                onContextMenu={onContextMenu}
               />
             ));
           })()}
@@ -281,6 +380,8 @@ interface MemberRowProps {
   viewRange: TimeRange;
   onAssignmentDoubleClick?: (assignment: Assignment) => void;
   onAssignmentResize?: (id: string, newStart: string, newEnd: string) => void;
+  onAssignmentDelete?: (assignmentId: string) => void;
+  onContextMenu?: (e: React.MouseEvent, assignmentId: string) => void;
 }
 
 function MemberRow({
@@ -291,6 +392,8 @@ function MemberRow({
   viewRange,
   onAssignmentDoubleClick,
   onAssignmentResize,
+  onAssignmentDelete,
+  onContextMenu,
 }: MemberRowProps) {
   const totalWidth = days.length * dayWidth;
   const resource = assignments[0]?.resource;
@@ -347,6 +450,8 @@ function MemberRow({
             dayWidth={dayWidth}
             onDoubleClick={() => onAssignmentDoubleClick?.(assignment)}
             onResize={onAssignmentResize}
+            onDelete={() => onAssignmentDelete?.(assignment.id)}
+            onContextMenu={(e) => onContextMenu?.(e, assignment.id)}
           />
         ))}
       </div>
@@ -361,6 +466,8 @@ interface ResizableAssignmentBarProps {
   dayWidth: number;
   onDoubleClick?: () => void;
   onResize?: (id: string, newStart: string, newEnd: string) => void;
+  onDelete?: () => void;
+  onContextMenu?: (e: React.MouseEvent) => void;
 }
 
 function ResizableAssignmentBar({
@@ -370,6 +477,8 @@ function ResizableAssignmentBar({
   dayWidth,
   onDoubleClick,
   onResize,
+  onDelete,
+  onContextMenu,
 }: ResizableAssignmentBarProps) {
   const [isResizing, setIsResizing] = useState<'left' | 'right' | null>(null);
   const [resizeOffset, setResizeOffset] = useState(0);
@@ -471,6 +580,16 @@ function ResizableAssignmentBar({
     };
   }, [isResizing, resizeOffset, dayWidth, assignment.id, onResize]);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (isResizing) return;
+    if (e.key === 'Enter') {
+      onDoubleClick?.();
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      onDelete?.();
+    }
+  };
+
   return (
     <div
       ref={barRef}
@@ -482,9 +601,10 @@ function ResizableAssignmentBar({
         borderColor: teamColor,
       }}
       onDoubleClick={isResizing ? undefined : onDoubleClick}
+      onContextMenu={onContextMenu}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && !isResizing && onDoubleClick?.()}
+      onKeyDown={handleKeyDown}
     >
       {/* Team Leader Icon */}
       {assignment.isTeamLeader && (

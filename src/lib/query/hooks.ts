@@ -153,3 +153,17 @@ export function useDeleteAssignment() {
     },
   });
 }
+
+// Create team
+export function useCreateTeam() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { name: string; description?: string; color: string }) => 
+      api.createTeam(input),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.scheduler.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.all });
+    },
+  });
+}

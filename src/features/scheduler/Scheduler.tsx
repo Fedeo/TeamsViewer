@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import {
   DndContext,
   DragEndEvent,
@@ -10,17 +10,34 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { useSchedulerData, useCreateAssignment, useUpdateAssignment } from '@/lib/query/hooks';
+import { useSchedulerData, useCreateAssignment, useUpdateAssignment, useDeleteAssignment } from '@/lib/query/hooks';
 import { useUIStore } from '@/lib/store/ui-store';
-import { ResourcePanel, SchedulerBoard, AssignmentDialog } from './components';
+import { findCrossTeamOverlaps } from '@/domain/overlap';
+
+const { markAsChanged } = useUIStore.getState();
+import { ResourcePanel, SchedulerBoard, AssignmentDialog, NewTeamFab } from './components';
 import type { Resource, Team, Assignment } from '@/domain/types';
 import styles from './Scheduler.module.css';
+
+interface OverlapWarning {
+  overlappingTeams: string[];
+}
 
 export function Scheduler() {
   const { data, isLoading } = useSchedulerData();
   const createAssignment = useCreateAssignment();
   const updateAssignment = useUpdateAssignment();
+  const deleteAssignment = useDeleteAssignment();
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [overlapWarning, setOverlapWarning] = useState<OverlapWarning | null>(null);
+  const [autoExpandTeamId, setAutoExpandTeamId] = useState<string | null>(null);
+
+  // Create a map of team IDs to team names for overlap warnings
+  const teamNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    data?.teams.forEach((team) => map.set(team.id, team.name));
+    return map;
+  }, [data?.teams]);
 
   const {
     viewRange,
@@ -74,11 +91,9 @@ export function Scheduler() {
     closeAssignmentDialog();
   }, [closeAssignmentDialog]);
 
-  const handleConfirmAssignment = useCallback(
+  const executeAssignment = useCallback(
     async (start: string, end: string, isTeamLeader: boolean, role?: string) => {
       if (!pendingAssignment) return;
-
-      setValidationError(null);
 
       try {
         if (dialogMode === 'edit' && editingAssignment) {
@@ -99,8 +114,12 @@ export function Scheduler() {
             role,
             isTeamLeader,
           });
+          // Auto-expand the team that received the new assignment
+          setAutoExpandTeamId(pendingAssignment.teamId);
         }
+        markAsChanged();
         closeAssignmentDialog();
+        setOverlapWarning(null);
       } catch (error) {
         if (error instanceof Error) {
           setValidationError(error.message);
@@ -110,6 +129,39 @@ export function Scheduler() {
       }
     },
     [pendingAssignment, dialogMode, editingAssignment, createAssignment, updateAssignment, closeAssignmentDialog]
+  );
+
+  const handleConfirmAssignment = useCallback(
+    async (start: string, end: string, isTeamLeader: boolean, role?: string) => {
+      if (!pendingAssignment || !data?.assignments) return;
+
+      setValidationError(null);
+
+      // Check for cross-team overlaps
+      const overlaps = findCrossTeamOverlaps(
+        pendingAssignment.resourceId,
+        pendingAssignment.teamId,
+        new Date(start),
+        new Date(end),
+        data.assignments,
+        editingAssignment?.id
+      );
+
+      if (overlaps.length > 0) {
+        // Get unique team names
+        const overlappingTeamNames = [...new Set(overlaps.map((o) => teamNameMap.get(o.teamId) || 'Unknown Team'))];
+        
+        // Show error - technician cannot belong to multiple teams at the same time
+        setOverlapWarning({
+          overlappingTeams: overlappingTeamNames,
+        });
+        return;
+      }
+
+      // No overlaps, proceed directly
+      await executeAssignment(start, end, isTeamLeader, role);
+    },
+    [pendingAssignment, data?.assignments, editingAssignment, teamNameMap, executeAssignment]
   );
 
   const handleAssignmentResize = useCallback(
@@ -122,6 +174,7 @@ export function Scheduler() {
         end: newEnd,
         isTeamLeader: assignment?.isTeamLeader,
       });
+      markAsChanged();
     },
     [updateAssignment, data?.assignments]
   );
@@ -132,6 +185,14 @@ export function Scheduler() {
       openEditAssignmentDialog(assignment);
     },
     [openEditAssignmentDialog]
+  );
+
+  const handleAssignmentDelete = useCallback(
+    (assignmentId: string) => {
+      deleteAssignment.mutate(assignmentId);
+      markAsChanged();
+    },
+    [deleteAssignment]
   );
 
   const pendingResource = data?.resources.find(
@@ -161,6 +222,8 @@ export function Scheduler() {
           dayWidth={dayWidth}
           onAssignmentDoubleClick={handleAssignmentDoubleClick}
           onAssignmentResize={handleAssignmentResize}
+          onAssignmentDelete={handleAssignmentDelete}
+          autoExpandTeamId={autoExpandTeamId}
         />
       </div>
 
@@ -175,9 +238,39 @@ export function Scheduler() {
         validationError={validationError}
       />
 
+      {/* Overlap Error Dialog */}
+      {overlapWarning && (
+        <div className={styles.warningOverlay} onClick={() => setOverlapWarning(null)}>
+          <div className={styles.warningDialog} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.errorIcon}>
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+            </div>
+            <h3>Cannot Assign</h3>
+            <p>
+              Resource already working in <strong>{overlapWarning.overlappingTeams.join(', ')}</strong> within this time period.
+            </p>
+            <p className={styles.warningSubtext}>
+              A technician cannot belong to different teams at the same time. Please adjust the dates.
+            </p>
+            <div className={styles.warningActions}>
+              <button 
+                className={styles.okButton} 
+                onClick={() => setOverlapWarning(null)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <DragOverlay>
         {/* Could render a preview of the dragged item here */}
       </DragOverlay>
+
+      <NewTeamFab />
     </DndContext>
   );
 }
