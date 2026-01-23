@@ -1,6 +1,6 @@
 // Centralized API client layer
-// Facade for IFS Cloud REST API - currently using mock data
-// TODO: Replace mock implementations with actual IFS Cloud API calls
+// Facade for IFS Cloud REST API
+// Supports both mock data (development) and live IFS Cloud API
 
 import type {
   Resource,
@@ -10,6 +10,21 @@ import type {
   UpdateAssignmentInput,
   TeamComposition,
 } from '@/domain/types';
+// Note: IFS Cloud calls are now handled by server-side API routes
+// See app/api/technicians/route.ts
+
+// ============================================================================
+// API MODE CONFIGURATION
+// ============================================================================
+
+// Set to true to use IFS Cloud API, false for mock data
+const USE_IFS_CLOUD = process.env.NEXT_PUBLIC_USE_IFS_CLOUD === 'true';
+
+// Debug: Log the API mode on module load
+console.log(`[API Client] USE_IFS_CLOUD = ${USE_IFS_CLOUD} (env: ${process.env.NEXT_PUBLIC_USE_IFS_CLOUD})`);
+
+// Cache for IFS technicians (to avoid repeated API calls)
+let cachedIFSTechnicians: Resource[] | null = null;
 
 // ============================================================================
 // MOCK DATA - Will be replaced by IFS Cloud API responses
@@ -78,8 +93,39 @@ export const api = {
   /**
    * GET /technicians
    * Retrieve all technicians for the specific resource group
+   * Uses IFS Cloud API when enabled, otherwise mock data
    */
   async getTechnicians(): Promise<Resource[]> {
+    console.log('[API Client] getTechnicians called, USE_IFS_CLOUD:', USE_IFS_CLOUD);
+    
+    if (USE_IFS_CLOUD) {
+      try {
+        console.log('[API Client] Fetching from /api/technicians...');
+        
+        // Use cache if available
+        if (cachedIFSTechnicians) {
+          console.log('[API Client] Returning cached technicians:', cachedIFSTechnicians.length);
+          return [...cachedIFSTechnicians];
+        }
+        
+        // Fetch from server-side API route (handles IFS Cloud auth securely)
+        const response = await fetch('/api/technicians');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch technicians: ${response.status}`);
+        }
+        
+        cachedIFSTechnicians = await response.json();
+        console.log('[API Client] Fetched technicians:', cachedIFSTechnicians?.length);
+        return [...(cachedIFSTechnicians || [])];
+      } catch (error) {
+        console.error('[API Client] Failed to fetch technicians:', error);
+        // Fallback to mock data on error
+        return [...mockTechnicians];
+      }
+    }
+    
+    // Use mock data
+    console.log('[API Client] Using mock data (IFS Cloud disabled)');
     await delay(200);
     return [...mockTechnicians];
   },
@@ -281,8 +327,14 @@ export const api = {
     assignments: Assignment[];
   }> {
     await delay(300);
+    
+    // Use real API for technicians when IFS Cloud is enabled
+    console.log('[API] getSchedulerData called, fetching technicians...');
+    const resources = await this.getTechnicians();
+    console.log('[API] getSchedulerData got', resources.length, 'technicians');
+    
     return {
-      resources: [...mockTechnicians],
+      resources,
       teams: [...mockTeams],
       assignments: [...mockAssignments],
     };

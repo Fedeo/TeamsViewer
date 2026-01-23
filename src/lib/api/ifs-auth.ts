@@ -115,8 +115,13 @@ export function isIFSAuthenticated(): boolean {
  */
 export async function getIFSRequestHeaders(): Promise<HeadersInit> {
   const token = await getIFSBearerToken();
+  
+  // Debug: Log that we're using the token
+  console.debug('[IFS Headers] Authorization token present:', !!token, 'Length:', token?.length);
+  
   return {
     'Content-Type': 'application/json; charset=utf-8',
+    'Accept': 'application/json;odata.metadata=full;IEEE754Compatible=true',
     'Authorization': token,
   };
 }
@@ -126,13 +131,22 @@ export async function getIFSRequestHeaders(): Promise<HeadersInit> {
  */
 export async function ifsGet<T>(endpoint: string): Promise<T> {
   const headers = await getIFSRequestHeaders();
+  
+  // Debug: Log request details
+  console.debug('[IFS GET] URL:', endpoint);
+  console.debug('[IFS GET] Headers:', JSON.stringify(headers, null, 2));
+  
   const response = await fetch(endpoint, {
     method: 'GET',
     headers,
   });
 
+  console.debug('[IFS GET] Response status:', response.status);
+
   if (!response.ok) {
-    throw new Error(`IFS API GET failed: ${response.status}`);
+    const errorBody = await response.text();
+    console.error(`IFS API GET failed: ${response.status} - ${errorBody}`);
+    throw new Error(`IFS API GET failed: ${response.status} - ${errorBody}`);
   }
 
   return response.json();
