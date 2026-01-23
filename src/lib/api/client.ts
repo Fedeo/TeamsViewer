@@ -16,14 +16,14 @@ import type {
 // ============================================================================
 
 const mockTechnicians: Resource[] = [
-  { id: 'tech-001', name: 'James', surname: 'Wilson', role: 'Technician', skills: ['Electrical', 'HVAC'], available: true },
-  { id: 'tech-002', name: 'Sarah', surname: 'Mitchell', role: 'Technician', skills: ['Plumbing', 'Gas'], available: true },
-  { id: 'tech-003', name: 'Michael', surname: 'Thompson', role: 'Senior Technician', skills: ['Electrical', 'Solar'], available: true },
-  { id: 'tech-004', name: 'Emma', surname: 'Davies', role: 'Technician', skills: ['HVAC', 'Refrigeration'], available: true },
-  { id: 'tech-005', name: 'Oliver', surname: 'Brown', role: 'Lead Technician', skills: ['All-round', 'Supervision'], available: true },
-  { id: 'tech-006', name: 'Charlotte', surname: 'Taylor', role: 'Technician', skills: ['Electrical', 'Automation'], available: true },
-  { id: 'tech-007', name: 'William', surname: 'Anderson', role: 'Technician', skills: ['Mechanical', 'Welding'], available: true },
-  { id: 'tech-008', name: 'Amelia', surname: 'Roberts', role: 'Technician', skills: ['Plumbing', 'Drainage'], available: true },
+  { id: 'tech-001', description: 'James Wilson', ResourceSeq: 1001, role: 'Technician', skills: [] },
+  { id: 'tech-002', description: 'Sarah Mitchell', ResourceSeq: 1002, role: 'Technician', skills: [] },
+  { id: 'tech-003', description: 'Michael Thompson', ResourceSeq: 1003, role: 'Technician', skills: [] },
+  { id: 'tech-004', description: 'Emma Davies', ResourceSeq: 1004, role: 'Technician', skills: [] },
+  { id: 'tech-005', description: 'Oliver Brown', ResourceSeq: 1005, role: 'Technician', skills: [] },
+  { id: 'tech-006', description: 'Charlotte Taylor', ResourceSeq: 1006, role: 'Technician', skills: [] },
+  { id: 'tech-007', description: 'William Anderson', ResourceSeq: 1007, role: 'Technician', skills: [] },
+  { id: 'tech-008', description: 'Amelia Roberts', ResourceSeq: 1008, role: 'Technician', skills: [] },
 ];
 
 const mockTeams: Team[] = [
@@ -106,10 +106,14 @@ export const api = {
     const teamAssignments = mockAssignments.filter((a) => a.teamId === teamId);
     const members = teamAssignments.map((assignment) => {
       const technician = mockTechnicians.find((t) => t.id === assignment.resourceId);
+      // Parse description to get name parts
+      const descParts = technician?.description?.split(' ') || ['Unknown'];
+      const resourceName = descParts[0] || 'Unknown';
+      const resourceSurname = descParts.slice(1).join(' ') || '';
       return {
         resourceId: assignment.resourceId,
-        resourceName: technician?.name || 'Unknown',
-        resourceSurname: technician?.surname || '',
+        resourceName,
+        resourceSurname,
         startDate: assignment.start,
         endDate: assignment.end,
         isTeamLeader: assignment.isTeamLeader,
@@ -162,7 +166,7 @@ export const api = {
       return {
         valid: false,
         conflictingAssignment: conflict,
-        message: `${conflictTech?.name} ${conflictTech?.surname} is already Team Leader during this period`,
+        message: `${conflictTech?.description || 'Unknown'} is already Team Leader during this period`,
       };
     }
     

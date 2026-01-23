@@ -46,3 +46,16 @@ when I click on an assignment on the gantt and click delete button or right clic
 It should also be possible to create new Team adding a 'New Team' button. Before creating code suggest a good place in the Ui where this could be located. Located bottom right of the GANTT.
 
 When adding a new technician to a team and saving the membership the Team should be automatically expanded.
+
+------------------------------------------------ API ----------------------------------------------
+CONTEXT: Given the postman collection and python IFS Cloud Project as an example of working API  we need to replace the current mock data with real data coming from IFS Cloud.
+
+to adjust for the API Call adjust mockTechnicians: Resource[] to have the following fields:
+id: as it is
+description: name + resourceSurname
+ResourceSeq: unique number
+role: hardcode "technician"
+skills : empty set
+available: remove it
+
+given the postman collection create an authentication method for all the API call to get the bearer token. Use the "000 - GENERATE_OPENID_CLOUD" postman request as an example for the authentication call. The parameters of the API should be stored in a configuration file. From the API response it should be extracted the id_token and set in a global variable token = "Bearer "+ id_token. This variable will be used in the header of the other API call we will need to do to IFS Cloud. When connected print a 'Connected' message in the debug console.

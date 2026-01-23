@@ -3,12 +3,10 @@
 
 export interface Resource {
   id: string;
-  name: string;
-  surname: string;
+  description: string; // Full name (name + surname)
+  ResourceSeq: number; // Unique sequence number from IFS Cloud
   role: string;
-  avatar?: string;
   skills: string[];
-  available: boolean;
 }
 
 export interface Team {

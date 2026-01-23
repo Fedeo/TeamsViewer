@@ -19,7 +19,7 @@ export function ResourcePanel({ resources, isLoading }: ResourcePanelProps) {
     }
     const query = searchQuery.toLowerCase();
     return resources.filter((resource) => {
-      const fullName = `${resource.name} ${resource.surname}`.toLowerCase();
+      const fullName = resource.description.toLowerCase();
       const role = resource.role.toLowerCase();
       const skills = resource.skills.join(' ').toLowerCase();
       return fullName.includes(query) || role.includes(query) || skills.includes(query);
@@ -122,7 +122,11 @@ function DraggableResource({ resource, index }: DraggableResourceProps) {
       }
     : undefined;
 
-  const initials = `${resource.name[0]}${resource.surname[0]}`.toUpperCase();
+  // Get initials from description (first letter of first and last word)
+  const words = resource.description.split(' ');
+  const initials = words.length >= 2 
+    ? `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase()
+    : resource.description.substring(0, 2).toUpperCase();
 
   const roleColors: Record<string, string> = {
     'Technician': '#3b82f6',
@@ -146,7 +150,7 @@ function DraggableResource({ resource, index }: DraggableResourceProps) {
         {initials}
       </div>
       <div className={styles.info}>
-        <span className={styles.name}>{resource.name} {resource.surname}</span>
+        <span className={styles.name}>{resource.description}</span>
         <span className={styles.role} style={{ color: roleColor }}>
           {resource.role}
         </span>

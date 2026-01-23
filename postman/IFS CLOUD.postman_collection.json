@@ -1,0 +1,1872 @@
+{
+  "info": {
+    "_postman_id": "b9353631-506a-4066-91bd-263f5a0c551a",
+    "name": "IFS CLOUD",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "977243"
+  },
+  "item": [
+    {
+      "name": "ABS",
+      "item": [
+        {
+          "name": "CreateWO1",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true,
+              "content-type": true,
+              "accept-encoding": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json;IEEE754Compatible=true",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json;odata.metadata=full;IEEE754Compatible=true",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"Contact\": null,\r\n  \"PhoneNo\": null,\r\n  \"EMail\": null,\r\n  \"ErrDescr\": \"Test with John together\",\r\n  \"OrgCode\": \"IT\",\r\n  \"Contract\": \"ITGEN\",\r\n  \"WorkTypeId\": null,\r\n  \"ErrSymptom\": null,\r\n  \"ErrDiscoverCode\": null,\r\n  \"ErrDescrLo\": null,\r\n  \"CustomerNo\": null,\r\n  \"LocationId\": \"\",\r\n  \"MchCode\": null,\r\n  \"ObjectSite\": null,\r\n  \"ConnectionType\": null,\r\n  \"ItemClassId\": null,\r\n  \"ContractId\": null,\r\n  \"LineNo\": null,\r\n  \"PriorityId\": null,\r\n  \"AddressId\": null,\r\n  \"AddressInfoId\": null,\r\n  \"Address1\": null,\r\n  \"Address2\": null,\r\n  \"Address3\": null,\r\n  \"Address4\": null,\r\n  \"Address5\": null,\r\n  \"Address6\": null,\r\n  \"ZipCode\": null,\r\n  \"City\": null,\r\n  \"AddrState\": null,\r\n  \"County\": null,\r\n  \"CountryCode\": null,\r\n  \"Country\": null,\r\n  \"EarliestStartDate\": null,\r\n  \"LatestFinish\": null,\r\n  \"CustWarrType\": null,\r\n  \"WarrantyRowNo\": null,\r\n  \"CustWarranty\": null,\r\n  \"ReferenceNo\": null,\r\n  \"CustOrderNo\": null,\r\n  \"CustOrderType\": null,\r\n  \"CurrencyCode\": null,\r\n  \"AuthorizeCode\": null,\r\n  \"CustOrderLineNo\": null,\r\n  \"CustOrderRelNo\": null,\r\n  \"CustOrderLineItemNo\": null,\r\n  \"LinearAssetSq\": null,\r\n  \"LinearAssetRevNo\": null,\r\n  \"EquipmentObjectSeq\": null\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/CreateServiceRequestHandling.svc/CreateServiceRequest",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "CreateServiceRequestHandling.svc",
+                "CreateServiceRequest"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CreateJtTask",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true,
+              "content-type": true,
+              "accept-encoding": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json;IEEE754Compatible=true",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json;odata.metadata=full;IEEE754Compatible=true",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"Contact\": null,\r\n  \"PhoneNo\": null,\r\n  \"EMail\": null,\r\n  \"ErrDescr\": \"Test via API\",\r\n  \"OrgCode\": \"IT\",\r\n  \"Contract\": \"ITGEN\",\r\n  \"WorkTypeId\": null,\r\n  \"ErrSymptom\": null,\r\n  \"ErrDiscoverCode\": null,\r\n  \"ErrDescrLo\": null,\r\n  \"CustomerNo\": null,\r\n  \"LocationId\": \"\",\r\n  \"MchCode\": null,\r\n  \"ObjectSite\": null,\r\n  \"ConnectionType\": null,\r\n  \"ItemClassId\": null,\r\n  \"ContractId\": null,\r\n  \"LineNo\": null,\r\n  \"PriorityId\": null,\r\n  \"RegDate\": \"2022-12-05T12:08:10Z\",\r\n  \"AddressId\": null,\r\n  \"AddressInfoId\": null,\r\n  \"Address1\": null,\r\n  \"Address2\": null,\r\n  \"Address3\": null,\r\n  \"Address4\": null,\r\n  \"Address5\": null,\r\n  \"Address6\": null,\r\n  \"ZipCode\": null,\r\n  \"City\": null,\r\n  \"AddrState\": null,\r\n  \"County\": null,\r\n  \"CountryCode\": null,\r\n  \"Country\": null,\r\n  \"EarliestStartDate\": null,\r\n  \"LatestFinish\": null,\r\n  \"CustWarrType\": null,\r\n  \"WarrantyRowNo\": null,\r\n  \"CustWarranty\": null,\r\n  \"ReferenceNo\": null,\r\n  \"CustOrderNo\": null,\r\n  \"CustOrderType\": null,\r\n  \"CurrencyCode\": null,\r\n  \"AuthorizeCode\": null,\r\n  \"CustOrderLineNo\": null,\r\n  \"CustOrderRelNo\": null,\r\n  \"CustOrderLineItemNo\": null,\r\n  \"LinearAssetSq\": null,\r\n  \"LinearAssetRevNo\": null,\r\n  \"EquipmentObjectSeq\": null\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/CreateServiceRequestHandling.svc/CreateServiceRequest",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "CreateServiceRequestHandling.svc",
+                "CreateServiceRequest"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "DOC",
+      "item": [
+        {
+          "name": "Create Document",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"DocClass\": \"INSTRUCTION\",\r\n\"Title\": \"Fist test Fedeo\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/int/ifsapplications/projection/v1/CreateAndImportDocument.svc/CreateDocument",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "int",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "CreateAndImportDocument.svc",
+                "CreateDocument"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CREWS",
+      "item": [
+        {
+          "name": "10 - GetCrews",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8",
+                "type": "default"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{bearer-token}}",
+                "type": "default"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://{{URL}}/main/ifsapplications/projection/v1/ResourceCrewHandling.svc/ResourceSet?$count=true&$select=ResourceSeq,ResourceId,Description&$filter=ResourceParentSeq eq {{ResourceGroupSeq}}",
+              "protocol": "https",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "ResourceCrewHandling.svc",
+                "ResourceSet"
+              ],
+              "query": [
+                {
+                  "key": "$count",
+                  "value": "true"
+                },
+                {
+                  "key": "$select",
+                  "value": "ResourceSeq,ResourceId,Description"
+                },
+                {
+                  "key": "$filter",
+                  "value": "ResourceParentSeq eq {{ResourceGroupSeq}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "20 - GetCrewMembership",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8",
+                "type": "default"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{bearer-token}}",
+                "type": "default"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://{{URL}}/main/ifsapplications/projection/v1/ResourceCrewHandling.svc/ResourceSet(ResourceSeq=2589)/ResourceCrewMembersArray?$count=true&$select=ResourceSeq,ResourceId,PeriodStart,PeriodEnd",
+              "protocol": "https",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "ResourceCrewHandling.svc",
+                "ResourceSet(ResourceSeq=2589)",
+                "ResourceCrewMembersArray"
+              ],
+              "query": [
+                {
+                  "key": "$count",
+                  "value": "true"
+                },
+                {
+                  "key": "$select",
+                  "value": "ResourceSeq,ResourceId,PeriodStart,PeriodEnd"
+                },
+                {
+                  "key": "$filter",
+                  "value": "ResourceParentSeq eq {{ResourceGroupSeq}}",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "30 - GetCrewLeaders",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8",
+                "type": "default"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{bearer-token}}",
+                "type": "default"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://{{URL}}/main/ifsapplications/projection/v1/ResourceCrewHandling.svc/ResourceCrewSet(ResourceSeq=2589)/ResourceCrewLeadersArray?$count=true&$select=ResourceSeq,ResourceId,ValidFrom,ValidTo",
+              "protocol": "https",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "ResourceCrewHandling.svc",
+                "ResourceCrewSet(ResourceSeq=2589)",
+                "ResourceCrewLeadersArray"
+              ],
+              "query": [
+                {
+                  "key": "$count",
+                  "value": "true"
+                },
+                {
+                  "key": "$select",
+                  "value": "ResourceSeq,ResourceId,ValidFrom,ValidTo"
+                },
+                {
+                  "key": "$filter",
+                  "value": "ResourceParentSeq eq {{ResourceGroupSeq}}",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "40 - GetTechnicians",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8",
+                "type": "default"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{bearer-token}}",
+                "type": "default"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://{{URL}}/main/ifsapplications/projection/v1/ServiceResourceDetailsHandling.svc/ResourceSet?$count=true&$select=ResourceSeq,ResourceId,Description,ServiceOrganizationId&$filter=(ResourceParentSeq eq 1864) and (ServiceOrganizationId eq '2501')",
+              "protocol": "https",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "ServiceResourceDetailsHandling.svc",
+                "ResourceSet"
+              ],
+              "query": [
+                {
+                  "key": "$count",
+                  "value": "true"
+                },
+                {
+                  "key": "$select",
+                  "value": "ResourceSeq,ResourceId,Description,ServiceOrganizationId"
+                },
+                {
+                  "key": "$filter",
+                  "value": "(ResourceParentSeq eq 1864) and (ServiceOrganizationId eq '2501')"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Various",
+      "item": [
+        {
+          "name": "GetListOfSuppliers",
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "0104286f-61e2-4eef-8ff2-7cea7e595694",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d10.demo.ifs.cloud/auth/realms/psc2d101/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d10.demo.ifs.cloud/auth/realms/psc2d101/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://ifspsc2-d10.demo.ifs.cloud/main/ifsapplications/projection/v1/MaintenancePurchaseRequisitionHandling.svc/FilterListId(WoNo=16520,Contract='JUND1')?$skip=0&$top=101",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d10",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "MaintenancePurchaseRequisitionHandling.svc",
+                "FilterListId(WoNo=16520,Contract='JUND1')"
+              ],
+              "query": [
+                {
+                  "key": "$skip",
+                  "value": "0"
+                },
+                {
+                  "key": "$top",
+                  "value": "101"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetObject",
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/EquipmentAllObjectsHandling.svc/EquipmentObjectListSet?$filter=MchCode eq 'BATTC00001'",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "EquipmentAllObjectsHandling.svc",
+                "EquipmentObjectListSet"
+              ],
+              "query": [
+                {
+                  "key": "$filter",
+                  "value": "MchCode eq 'BATTC00001'"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetObjectCount",
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/EquipmentAllObjectsHandling.svc/EquipmentObjectListSet?$filter=MchCode eq 'BATTC00003' &$count=true",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "EquipmentAllObjectsHandling.svc",
+                "EquipmentObjectListSet"
+              ],
+              "query": [
+                {
+                  "key": "$filter",
+                  "value": "MchCode eq 'BATTC00003' "
+                },
+                {
+                  "key": "$count",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateObject",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"SupMchCode\":\"\",\r\n    \"SupContract\":\"ITGEN\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/EquipmentAllObjectsHandling.svc/EquipmentSerialSet(EquipmentObjectSeq=43106)",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "EquipmentAllObjectsHandling.svc",
+                "EquipmentSerialSet(EquipmentObjectSeq=43106)"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateTaskAddress2",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "Q036X5ISBptN9T7sTzdbxKZTjOaYNE4s",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ybag-d04.build.ifsdemoworld.com/auth/realms/ybagd041/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ybag-d04.build.ifsdemoworld.com/auth/realms/ybagd041/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"TaskSeq\": 62,\r\n  \"Address1\": \"100 Strand\",\r\n  \"Address2\": null,\r\n  \"Address3\": null,\r\n  \"Address4\": null,\r\n  \"Address5\": null,\r\n  \"Address6\": \"100 Strand\",\r\n  \"ZipCode\": \" WC2R 0JJ\",\r\n  \"City\": \" London\",\r\n  \"State\": null,\r\n  \"County\": null,\r\n  \"CountryCode\": \"GB\",\r\n  \"LocationId\": \"LOC62\",\r\n  \"AddressInfoId\": 823\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ybag-d04.build.ifsdemoworld.com/main/ifsapplications/projection/v1/TaskAddressAssistantHandling.svc/ModifyAddress",
+              "protocol": "https",
+              "host": [
+                "ybag-d04",
+                "build",
+                "ifsdemoworld",
+                "com"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "TaskAddressAssistantHandling.svc",
+                "ModifyAddress"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateTaskAddress1",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "Q036X5ISBptN9T7sTzdbxKZTjOaYNE4s",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ybag-d04.build.ifsdemoworld.com/auth/realms/ybagd041/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ybag-d04.build.ifsdemoworld.com/auth/realms/ybagd041/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"DfsLocationId\": \"LOC62\",\r\n  \"DfsLocationName\": \"100 Strand, GB\",\r\n  \"Address1\": \"100 Strand\",\r\n  \"Address6\": \"100 Strand\",\r\n  \"ZipCode\": \" WC2R 0JJ\",\r\n  \"City\": \" London\",\r\n  \"Country\": \"UNITED KINGDOM OF GREAT BRITAIN AND\",\r\n  \"CountryCode\": \"GB\",\r\n  \"DfnTaskSeq\": 62,\r\n  \"DfsCompany\": \"VSEU\",\r\n  \"DfsCustomerNo\": \"DEFAULT\",\r\n  \"DfnAddressInfoId\": 804,\r\n  \"LocPartyType\": \"CUSTOMER\",\r\n  \"LocIdentity\": \"DEFAULT\",\r\n  \"LocationObjkey\": \"ED2ECC57304EFBA5E0534555E90A23B6\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ybag-d04.build.ifsdemoworld.com/main/ifsapplications/projection/v1/TaskAddressAssistantHandling.svc/TaskAddressEntitySet",
+              "protocol": "https",
+              "host": [
+                "ybag-d04",
+                "build",
+                "ifsdemoworld",
+                "com"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "TaskAddressAssistantHandling.svc",
+                "TaskAddressEntitySet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateTaskAddress1 Copy",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true,
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "Q036X5ISBptN9T7sTzdbxKZTjOaYNE4s",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ybag-d04.build.ifsdemoworld.com/auth/realms/ybagd041/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ybag-d04.build.ifsdemoworld.com/auth/realms/ybagd041/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ybag-d04.build.ifsdemoworld.com/main/ifsapplications/projection/v1/TaskAddressAssistantHandling.svc/TaskAddressEntitySet(Objkey='ED2ECC572D61FBA5E0534555E90A23B6')",
+              "protocol": "https",
+              "host": [
+                "ybag-d04",
+                "build",
+                "ifsdemoworld",
+                "com"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "TaskAddressAssistantHandling.svc",
+                "TaskAddressEntitySet(Objkey='ED2ECC572D61FBA5E0534555E90A23B6')"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateObjectStatus",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true,
+              "content-type": true,
+              "accept-encoding": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json;IEEE754Compatible=true",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json;odata.metadata=full;IEEE754Compatible=true",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"Contract\": \"ITGEN\",\r\n    \"MchCode\": \"BATTC00004\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/EquipmentAllObjectsHandling.svc/SetOutofOperationSerial",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "EquipmentAllObjectsHandling.svc",
+                "SetOutofOperationSerial"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TriggerCompletionStep",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true,
+              "content-type": true,
+              "accept-encoding": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json;IEEE754Compatible=true",
+                "type": "text",
+                "disabled": true
+              },
+              {
+                "key": "Accept",
+                "value": "application/json;odata.metadata=full;IEEE754Compatible=true",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/WorkTaskStepsHandling.svc/JtTaskStepSet(TaskSeq=19536,TaskStepSeq=7451)/IfsApp.WorkTaskStepsHandling.JtTaskStep_Complete",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "WorkTaskStepsHandling.svc",
+                "JtTaskStepSet(TaskSeq=19536,TaskStepSeq=7451)",
+                "IfsApp.WorkTaskStepsHandling.JtTaskStep_Complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CreateBomUpdateError",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true,
+              "content-type": true,
+              "accept-encoding": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json;IEEE754Compatible=true",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json;odata.metadata=full;IEEE754Compatible=true",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"Cf_Error\": \"Test Error by Postman\",\r\n\"Cf_Status\": \"CfEnum_TOCKECK\",\r\n\"Cf_Timestamp\": \"2019-10-01T02:01:01Z\",\r\n\"Cf_User\": \"Fedeo\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/CustomProjectionUpdateBomErrors.svc/UpdateBomErrorsSet",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "CustomProjectionUpdateBomErrors.svc",
+                "UpdateBomErrorsSet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getBOMErrors",
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "clientSecret",
+                  "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+                  "type": "string"
+                },
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ifspsc2-d09.demo.ifs.cloud/auth/realms/psc2d091/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://ifspsc2-d09.demo.ifs.cloud/main/ifsapplications/projection/v1/CustomProjectionUpdateBomErrors.svc/UpdateBomErrorsSet?$top=50",
+              "protocol": "https",
+              "host": [
+                "ifspsc2-d09",
+                "demo",
+                "ifs",
+                "cloud"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "CustomProjectionUpdateBomErrors.svc",
+                "UpdateBomErrorsSet"
+              ],
+              "query": [
+                {
+                  "key": "$top",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "geDependencies",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "content-type": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ybag-d02.build.ifsdemoworld.com/auth/realms/ybagd021/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ybag-d02.build.ifsdemoworld.com/auth/realms/ybagd021/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientSecret",
+                  "value": "BQUShHxTkX1xzQHKZNeCQBp8m9r1hGk1",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"TaskSeq\": 11,\r\n  \"WoNo\": 1,\r\n   \"TaskDependencyList\": \"TASK_SEQ=11^\"\r\n}"
+            },
+            "url": {
+              "raw": "https://ybag-d02.build.ifsdemoworld.com/main/ifsapplications/projection/v1/WorkTaskDependenciesHandling.svc/TaskDependencySet",
+              "protocol": "https",
+              "host": [
+                "ybag-d02",
+                "build",
+                "ifsdemoworld",
+                "com"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "WorkTaskDependenciesHandling.svc",
+                "TaskDependencySet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "geDependencies2Step",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true,
+            "disabledSystemHeaders": {
+              "content-type": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "oauth2",
+              "oauth2": [
+                {
+                  "key": "accessTokenUrl",
+                  "value": "https://ybag-d02.build.ifsdemoworld.com/auth/realms/ybagd021/protocol/openid-connect/token",
+                  "type": "string"
+                },
+                {
+                  "key": "authUrl",
+                  "value": "https://ybag-d02.build.ifsdemoworld.com/auth/realms/ybagd021/protocol/openid-connect/auth",
+                  "type": "string"
+                },
+                {
+                  "key": "clientSecret",
+                  "value": "BQUShHxTkX1xzQHKZNeCQBp8m9r1hGk1",
+                  "type": "string"
+                },
+                {
+                  "key": "clientId",
+                  "value": "Postman-API",
+                  "type": "string"
+                },
+                {
+                  "key": "useBrowser",
+                  "value": true,
+                  "type": "boolean"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid microprofile-jwt",
+                  "type": "string"
+                },
+                {
+                  "key": "tokenName",
+                  "value": "PostmanAuth",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "https://ybag-d02.build.ifsdemoworld.com/main/ifsapplications/projection/v1/WorkTaskDependenciesHandling.svc/TaskDependencySet(Objkey='ED938859FDF4E476E0534655E90A524F')/JtTaskDependencySelectorArray(Objkey='ED938859FDF5E476E0534655E90A524F')/ReturnTaskDependencyArray?$orderby=OrderNo,ParentTaskSeq&$select=Parent,IsPickupTask,Ignore,ParentTaskSeq,OrderNo,ParentTaskDesc,WorkStageId,DependencyType,luname,keyref&$expand=WorkStageIdRef($select=Description,Objgrants,luname,keyref)&$skip=0&$top=25",
+              "protocol": "https",
+              "host": [
+                "ybag-d02",
+                "build",
+                "ifsdemoworld",
+                "com"
+              ],
+              "path": [
+                "main",
+                "ifsapplications",
+                "projection",
+                "v1",
+                "WorkTaskDependenciesHandling.svc",
+                "TaskDependencySet(Objkey='ED938859FDF4E476E0534655E90A524F')",
+                "JtTaskDependencySelectorArray(Objkey='ED938859FDF5E476E0534655E90A524F')",
+                "ReturnTaskDependencyArray"
+              ],
+              "query": [
+                {
+                  "key": "$orderby",
+                  "value": "OrderNo,ParentTaskSeq"
+                },
+                {
+                  "key": "$select",
+                  "value": "Parent,IsPickupTask,Ignore,ParentTaskSeq,OrderNo,ParentTaskDesc,WorkStageId,DependencyType,luname,keyref"
+                },
+                {
+                  "key": "$expand",
+                  "value": "WorkStageIdRef($select=Description,Objgrants,luname,keyref)"
+                },
+                {
+                  "key": "$skip",
+                  "value": "0"
+                },
+                {
+                  "key": "$top",
+                  "value": "25"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sessions",
+      "item": [
+        {
+          "name": "000 - GENERATE_OPENID_CLOUD",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"The response has all properties\", () => {\r",
+                  "    const responseJson = pm.response.json();\r",
+                  "    pm.environment.unset(\"bearer-token\");\r",
+                  "    pm.environment.set(\"bearer-token\", \"Bearer \"+responseJson.id_token);\r",
+                  "    pm.environment.set(\"bearer-token-2\", responseJson.id_token);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "{{client-id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client-secret}}",
+                  "type": "text"
+                },
+                {
+                  "key": "resource",
+                  "value": "{{client-id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "{{username}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "{{password}}",
+                  "type": "text"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "response_type",
+                  "value": "id_token token",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://{{URL}}/auth/realms/{{environment-id}}/protocol/openid-connect/token",
+              "protocol": "https",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "auth",
+                "realms",
+                "{{environment-id}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "accessTokenUrl",
+        "value": "https://ifspsc2-d10.demo.ifs.cloud/auth/realms/psc2d101/protocol/openid-connect/token",
+        "type": "string"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://ifspsc2-d10.demo.ifs.cloud/auth/realms/psc2d101/protocol/openid-connect/auth",
+        "type": "string"
+      },
+      {
+        "key": "clientSecret",
+        "value": "8c2ca067-3356-48eb-a4b0-02bedf87d60c",
+        "type": "string"
+      },
+      {
+        "key": "tokenName",
+        "value": "PostmanAuth",
+        "type": "string"
+      },
+      {
+        "key": "challengeAlgorithm",
+        "value": "S256",
+        "type": "string"
+      },
+      {
+        "key": "useBrowser",
+        "value": true,
+        "type": "boolean"
+      },
+      {
+        "key": "scope",
+        "value": "openid microprofile-jwt",
+        "type": "string"
+      },
+      {
+        "key": "grant_type",
+        "value": "authorization_code",
+        "type": "string"
+      },
+      {
+        "key": "clientId",
+        "value": "Postman-API",
+        "type": "string"
+      },
+      {
+        "key": "addTokenTo",
+        "value": "header",
+        "type": "string"
+      },
+      {
+        "key": "client_authentication",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

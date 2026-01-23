@@ -86,7 +86,7 @@ export function AssignmentDialog({
         <div className={styles.preview}>
           <div className={styles.previewResource}>
             <span className={styles.previewLabel}>Technician</span>
-            <span className={styles.previewValue}>{resource ? `${resource.name} ${resource.surname}` : 'Unknown'}</span>
+            <span className={styles.previewValue}>{resource ? resource.description : 'Unknown'}</span>
           </div>
           <div className={styles.previewArrow}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -161,7 +161,10 @@ export function AssignmentDialog({
               />
               <span className={styles.checkboxIcon}>
                 <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                  {/* Person with crown - Team Leader */}
+                  <circle cx="12" cy="7" r="4" />
+                  <path d="M12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" />
+                  <path d="M12 1l1.5 2.5L16 4l-1.5 1L16 6H8l1.5-1L8 4l2.5-.5L12 1z" />
                 </svg>
               </span>
               <span className={styles.checkboxText}>

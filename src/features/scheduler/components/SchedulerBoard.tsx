@@ -399,7 +399,12 @@ function MemberRow({
   const resource = assignments[0]?.resource;
 
   const initials = resource
-    ? `${resource.name[0]}${resource.surname[0]}`.toUpperCase()
+    ? (() => {
+      const words = resource.description.split(' ');
+      return words.length >= 2 
+        ? `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase()
+        : resource.description.substring(0, 2).toUpperCase();
+    })()
     : '??';
 
   // Sort assignments by start date for display
@@ -421,7 +426,7 @@ function MemberRow({
         </div>
         <div className={styles.memberInfo}>
           <span className={styles.memberName}>
-            {resource ? `${resource.name} ${resource.surname}` : 'Unknown'}
+            {resource ? resource.description : 'Unknown'}
           </span>
           <span className={styles.memberDates}>
             {dateRangesText}
@@ -610,7 +615,10 @@ function ResizableAssignmentBar({
       {assignment.isTeamLeader && (
         <div className={styles.teamLeaderIcon} style={{ color: teamColor }}>
           <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+            {/* Person with crown - Team Leader */}
+            <circle cx="12" cy="7" r="4" />
+            <path d="M12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" />
+            <path d="M12 1l1.5 2.5L16 4l-1.5 1L16 6H8l1.5-1L8 4l2.5-.5L12 1z" />
           </svg>
         </div>
       )}
