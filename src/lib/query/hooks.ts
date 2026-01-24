@@ -44,6 +44,8 @@ export function useSchedulerData() {
     queryKey: queryKeys.scheduler.all,
     queryFn: () => api.getSchedulerData(),
     staleTime: 1000 * 30, // 30 seconds for live data
+    refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: false, // Don't refetch on window focus (handled by refresh button)
   });
 }
 

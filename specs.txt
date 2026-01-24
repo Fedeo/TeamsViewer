@@ -74,4 +74,6 @@ adjust the API call for membership to obtain also the field ResourceMemberSeq. A
 adjust the API call for leadershio to obtain also the field ResourceCrewLeaderSeq. Adjust also url and unit test.
 
 
-Change the function to define the teams as follow:
+Now that all API Calls are working let's adjust the scheduler/gantt to use the data from the API like this:
+1) All teams are retrieved by the GetCrews API
+2) For each team from point 1) use the ResourceSeq to get the membership to that team using getCrewMembers API. To understand if that membership is also a leader call the getCrewLeaders API for the same ResourceSeq and check if there is an item for the same resource_id and validFrom and ValidTo

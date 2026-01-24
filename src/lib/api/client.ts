@@ -12,6 +12,8 @@ import type {
 } from '@/domain/types';
 // Note: IFS Cloud calls are now handled by server-side API routes
 // See app/api/technicians/route.ts
+// Note: Crews API calls are handled via server-side API routes
+// See app/api/crews/route.ts, app/api/crews/[resourceSeq]/members/route.ts, etc.
 
 // ============================================================================
 // API MODE CONFIGURATION
@@ -65,6 +67,21 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // Check if two date ranges overlap
 function rangesOverlap(start1: Date, end1: Date, start2: Date, end2: Date): boolean {
   return start1 < end2 && start2 < end1;
+}
+
+// Check if a membership period overlaps with a leader period
+function isLeaderForPeriod(
+  resourceId: string,
+  membershipStart: Date,
+  membershipEnd: Date,
+  leaders: Array<{ ResourceId: string; ValidFrom: string; ValidTo: string }>
+): boolean {
+  return leaders.some((leader) => {
+    if (leader.ResourceId !== resourceId) return false;
+    const leaderStart = new Date(leader.ValidFrom);
+    const leaderEnd = new Date(leader.ValidTo);
+    return rangesOverlap(membershipStart, membershipEnd, leaderStart, leaderEnd);
+  });
 }
 
 // Find conflicting team leader assignments
@@ -319,6 +336,137 @@ export const api = {
   },
 
   /**
+   * Fetch crews, memberships, and leaders from IFS Cloud via server-side API routes
+   * and map to domain types
+   */
+  async getCrewsDataFromIFS(): Promise<{
+    teams: Team[];
+    assignments: Assignment[];
+  }> {
+    console.log('[API] Fetching crews data from IFS Cloud via API routes...');
+    
+    // 1) Get all crews from server-side API route
+    const crewsResponse = await fetch('/api/crews');
+    if (!crewsResponse.ok) {
+      throw new Error(`Failed to fetch crews: ${crewsResponse.status} ${crewsResponse.statusText}`);
+    }
+    const crews: Array<{ ResourceSeq: number; ResourceId: string; Description: string }> = await crewsResponse.json();
+    console.log(`[API] Retrieved ${crews.length} crews from IFS Cloud`);
+    
+    const teams: Team[] = [];
+    const assignments: Assignment[] = [];
+    
+    // 2) For each crew, fetch memberships and leaders from server-side API routes
+    for (const crew of crews) {
+      const teamId = `crew-${crew.ResourceSeq}`;
+      
+      // Map crew to team
+      const team: Team = {
+        id: teamId,
+        name: crew.ResourceId,
+        description: crew.Description,
+        color: '#3B82F6', // Default color (could be enhanced later)
+        createdAt: new Date().toISOString(), // IFS doesn't provide this, use current date
+      };
+      teams.push(team);
+      
+      try {
+        // Fetch memberships for this crew from server-side API route
+        const membershipsUrl = `/api/crews/${crew.ResourceSeq}/members`;
+        console.log(`[API] Fetching memberships for crew ${crew.ResourceId} (${crew.ResourceSeq}) from ${membershipsUrl}`);
+        const membershipsResponse = await fetch(membershipsUrl);
+        
+        if (!membershipsResponse.ok) {
+          const errorText = await membershipsResponse.text();
+          console.error(`[API] Failed to fetch memberships for crew ${crew.ResourceId} (${crew.ResourceSeq}): ${membershipsResponse.status} ${membershipsResponse.statusText}`);
+          console.error(`[API] Error response: ${errorText}`);
+          // Don't continue - still create the team, just without members
+        } else {
+          const memberships: Array<{
+            ResourceSeq: number;
+            ResourceMemberSeq: number;
+            ResourceId: string;
+            PeriodStart: string;
+            PeriodEnd: string;
+          }> = await membershipsResponse.json();
+          console.log(`[API] Crew ${crew.ResourceId} (${crew.ResourceSeq}): ${memberships.length} memberships found`);
+          
+          if (memberships.length > 0) {
+            console.log(`[API] Sample membership ResourceIds:`, memberships.slice(0, 3).map(m => m.ResourceId));
+          }
+          
+          // Fetch leaders for this crew from server-side API route
+          const leadersUrl = `/api/crews/${crew.ResourceSeq}/leaders`;
+          console.log(`[API] Fetching leaders for crew ${crew.ResourceId} (${crew.ResourceSeq}) from ${leadersUrl}`);
+          const leadersResponse = await fetch(leadersUrl);
+          
+          let leaders: Array<{
+            ResourceSeq: number;
+            ResourceCrewLeaderSeq: number;
+            ResourceId: string;
+            ValidFrom: string;
+            ValidTo: string;
+          }> = [];
+          
+          if (!leadersResponse.ok) {
+            const errorText = await leadersResponse.text();
+            console.warn(`[API] Failed to fetch leaders for crew ${crew.ResourceId} (${crew.ResourceSeq}): ${leadersResponse.status} ${leadersResponse.statusText}`);
+            console.warn(`[API] Error response: ${errorText}`);
+          } else {
+            leaders = await leadersResponse.json();
+            console.log(`[API] Crew ${crew.ResourceId} (${crew.ResourceSeq}): ${leaders.length} leaders found`);
+          }
+          
+          // Map memberships to assignments
+          for (const membership of memberships) {
+            const membershipStart = new Date(membership.PeriodStart);
+            const membershipEnd = new Date(membership.PeriodEnd);
+            
+            // Check if this membership is also a leader
+            const isTeamLeader = isLeaderForPeriod(
+              membership.ResourceId,
+              membershipStart,
+              membershipEnd,
+              leaders
+            );
+            
+            const assignment: Assignment = {
+              id: `assign-${crew.ResourceSeq}-${membership.ResourceMemberSeq}`,
+              resourceId: membership.ResourceId, // This should match a Resource.id
+              teamId: teamId,
+              start: membership.PeriodStart,
+              end: membership.PeriodEnd,
+              isTeamLeader,
+            };
+            assignments.push(assignment);
+            console.debug(`[API] Created assignment for resource ${membership.ResourceId} in team ${teamId} (${crew.ResourceId})`);
+          }
+        }
+      } catch (error) {
+        console.error(`[API] Error fetching data for crew ${crew.ResourceId} (${crew.ResourceSeq}):`, error);
+        // Continue with other crews even if one fails, but still create the team
+      }
+    }
+    
+    console.log(`[API] Mapped ${teams.length} teams and ${assignments.length} assignments from IFS Cloud`);
+    
+    // Diagnostic: Log assignments per team
+    const assignmentsByTeam = new Map<string, number>();
+    const resourceIdsInAssignments = new Set<string>();
+    assignments.forEach(a => {
+      assignmentsByTeam.set(a.teamId, (assignmentsByTeam.get(a.teamId) || 0) + 1);
+      resourceIdsInAssignments.add(a.resourceId);
+    });
+    console.log('[API] Assignments per team:', Array.from(assignmentsByTeam.entries()).map(([teamId, count]) => {
+      const team = teams.find(t => t.id === teamId);
+      return `${team?.name || teamId}: ${count}`;
+    }).join(', '));
+    console.log(`[API] Unique resourceIds in assignments: ${resourceIdsInAssignments.size}`, Array.from(resourceIdsInAssignments).slice(0, 10));
+    
+    return { teams, assignments };
+  },
+
+  /**
    * Get all scheduler data in one call
    */
   async getSchedulerData(): Promise<{
@@ -333,6 +481,27 @@ export const api = {
     const resources = await this.getTechnicians();
     console.log('[API] getSchedulerData got', resources.length, 'technicians');
     
+    // Use IFS Cloud APIs for crews when enabled
+    if (USE_IFS_CLOUD) {
+      try {
+        const { teams, assignments } = await this.getCrewsDataFromIFS();
+        return {
+          resources,
+          teams,
+          assignments,
+        };
+      } catch (error) {
+        console.error('[API] Error fetching crews data from IFS Cloud, falling back to mock data:', error);
+        // Fall back to mock data if IFS Cloud fails
+        return {
+          resources,
+          teams: [...mockTeams],
+          assignments: [...mockAssignments],
+        };
+      }
+    }
+    
+    // Use mock data when IFS Cloud is disabled
     return {
       resources,
       teams: [...mockTeams],

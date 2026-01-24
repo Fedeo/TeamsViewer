@@ -119,14 +119,31 @@ export function SchedulerBoard({
     teams.forEach((team) => {
       const teamAssignments = assignments
         .filter((a) => a.teamId === team.id)
-        .map((a) => ({
-          ...a,
-          resource: getResourceById(a.resourceId),
-        }));
+        .map((a) => {
+          const resource = getResourceById(a.resourceId);
+          if (!resource) {
+            console.warn(`[SchedulerBoard] Assignment ${a.id} has resourceId "${a.resourceId}" but no matching resource found in resources list`);
+            console.warn(`[SchedulerBoard] Available resource IDs:`, resources.map(r => r.id).slice(0, 10));
+          }
+          return {
+            ...a,
+            resource,
+          };
+        });
       map.set(team.id, teamAssignments);
+      
+      // Diagnostic logging for specific team
+      if (team.name === 'CR2501-02' || team.id.includes('CR2501-02')) {
+        console.log(`[SchedulerBoard] Team ${team.name} (${team.id}):`, {
+          totalAssignments: teamAssignments.length,
+          assignmentsWithResources: teamAssignments.filter(a => a.resource).length,
+          assignmentsWithoutResources: teamAssignments.filter(a => !a.resource).length,
+          resourceIds: teamAssignments.map(a => a.resourceId),
+        });
+      }
     });
     return map;
-  }, [teams, assignments, getResourceById]);
+  }, [teams, assignments, getResourceById, resources]);
 
   const toggleTeamExpanded = useCallback((teamId: string) => {
     setExpandedTeams((prev) => {
