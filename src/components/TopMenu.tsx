@@ -49,7 +49,7 @@ export function TopMenu() {
         </div>
         <div className={styles.brandText}>
           <h1>TeamsViewer</h1>
-          <span>Crew Scheduler</span>
+          <span>Crews Scheduler</span>
         </div>
       </div>
 

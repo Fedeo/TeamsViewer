@@ -3,7 +3,7 @@ import { QueryProvider } from '@/lib/query/provider';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'TeamsViewer - Crew Scheduler',
+  title: 'TeamsViewer - Crews Scheduler',
   description: 'Gantt-style team and resource scheduling application',
 };
 

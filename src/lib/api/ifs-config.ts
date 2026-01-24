@@ -38,7 +38,7 @@ export const ifsCloudConfig: IFSCloudConfig = {
   password: process.env.IFS_PASSWORD || '',
   
   // Resource configuration for crew/technician queries
-  resourceGroupSeq: parseInt(process.env.NEXT_PUBLIC_IFS_RESOURCE_GROUP_SEQ || '1864', 10),
+  resourceGroupSeq: parseInt(process.env.NEXT_PUBLIC_IFS_RESOURCE_GROUP_SEQ || '1937', 10),
   serviceOrganizationId: process.env.NEXT_PUBLIC_IFS_SERVICE_ORG_ID || '2501',
 };
 

@@ -58,13 +58,14 @@ export async function authenticateIFSCloud(): Promise<string> {
 
     const tokenData: TokenResponse = await response.json();
 
-    // Extract id_token and create bearer token
-    if (!tokenData.id_token) {
-      throw new Error('No id_token in authentication response');
+    // Use access_token for API authorization (standard for IFS Cloud Projections)
+    // Note: User previously requested id_token, but Crews API returns 401 with id_token
+    if (!tokenData.access_token) {
+      throw new Error('No access_token in authentication response');
     }
 
     // Set global bearer token
-    bearerToken = `Bearer ${tokenData.id_token}`;
+    bearerToken = `Bearer ${tokenData.access_token}`;
     
     // Calculate expiration (use expires_in with 1 minute buffer)
     const expiresInMs = (tokenData.expires_in - 60) * 1000;
@@ -121,7 +122,6 @@ export async function getIFSRequestHeaders(): Promise<HeadersInit> {
   
   return {
     'Content-Type': 'application/json; charset=utf-8',
-    'Accept': 'application/json;odata.metadata=full;IEEE754Compatible=true',
     'Authorization': token,
   };
 }
