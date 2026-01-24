@@ -38,7 +38,7 @@ describe('IFS Cloud Crews API', () => {
       const resourceSeq = 2589;
       const mockResponse = {
         value: [
-          { ResourceSeq: 1001, ResourceId: 'TECH1', PeriodStart: '2024-01-01T00:00:00Z', PeriodEnd: '2024-12-31T23:59:59Z' },
+          { ResourceSeq: 1001, ResourceMemberSeq: 5001, ResourceId: 'TECH1', PeriodStart: '2024-01-01T00:00:00Z', PeriodEnd: '2024-12-31T23:59:59Z' },
         ],
       };
       (ifsAuth.ifsGet as jest.Mock).mockResolvedValueOnce(mockResponse);
@@ -48,7 +48,7 @@ describe('IFS Cloud Crews API', () => {
       expect(ifsAuth.ifsGet).toHaveBeenCalledTimes(1);
       const calledUrl = (ifsAuth.ifsGet as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain(`ResourceSet(ResourceSeq=${resourceSeq})/ResourceCrewMembersArray`);
-      expect(calledUrl).toContain('$select=ResourceSeq,ResourceId,PeriodStart,PeriodEnd');
+      expect(calledUrl).toContain('$select=ResourceSeq,ResourceMemberSeq,ResourceId,PeriodStart,PeriodEnd');
       
       expect(memberships).toEqual(mockResponse.value);
     });
@@ -59,7 +59,7 @@ describe('IFS Cloud Crews API', () => {
       const resourceSeq = 2589;
       const mockResponse = {
         value: [
-          { ResourceSeq: 1005, ResourceId: 'LEADER1', ValidFrom: '2024-01-01T00:00:00Z', ValidTo: '2024-12-31T23:59:59Z' },
+          { ResourceSeq: 1005, ResourceCrewLeaderSeq: 6001, ResourceId: 'LEADER1', ValidFrom: '2024-01-01T00:00:00Z', ValidTo: '2024-12-31T23:59:59Z' },
         ],
       };
       (ifsAuth.ifsGet as jest.Mock).mockResolvedValueOnce(mockResponse);
@@ -69,7 +69,7 @@ describe('IFS Cloud Crews API', () => {
       expect(ifsAuth.ifsGet).toHaveBeenCalledTimes(1);
       const calledUrl = (ifsAuth.ifsGet as jest.Mock).mock.calls[0][0];
       expect(calledUrl).toContain(`ResourceCrewSet(ResourceSeq=${resourceSeq})/ResourceCrewLeadersArray`);
-      expect(calledUrl).toContain('$select=ResourceSeq,ResourceId,ValidFrom,ValidTo');
+      expect(calledUrl).toContain('$select=ResourceSeq,ResourceCrewLeaderSeq,ResourceId,ValidFrom,ValidTo');
       
       expect(leaders).toEqual(mockResponse.value);
     });

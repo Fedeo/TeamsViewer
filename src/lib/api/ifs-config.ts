@@ -18,6 +18,7 @@ export interface IFSCloudConfig {
   
   // Resource group configuration
   resourceGroupSeq: number;
+  resourceGroupSeqCrews: number;
   serviceOrganizationId: string;
 }
 
@@ -39,6 +40,7 @@ export const ifsCloudConfig: IFSCloudConfig = {
   
   // Resource configuration for crew/technician queries
   resourceGroupSeq: parseInt(process.env.NEXT_PUBLIC_IFS_RESOURCE_GROUP_SEQ || '1937', 10),
+  resourceGroupSeqCrews: parseInt(process.env.NEXT_PUBLIC_IFS_RESOURCE_GROUP_SEQ_CREWS || '1938', 10),
   serviceOrganizationId: process.env.NEXT_PUBLIC_IFS_SERVICE_ORG_ID || '2501',
 };
 

@@ -20,6 +20,7 @@ interface IFSCrewResponse {
 // IFS Cloud API response types for Crew Memberships
 interface IFSCrewMemberItem {
   ResourceSeq: number;
+  ResourceMemberSeq: number;
   ResourceId: string;
   PeriodStart: string;
   PeriodEnd: string;
@@ -34,6 +35,7 @@ interface IFSCrewMemberResponse {
 // IFS Cloud API response types for Crew Leaders
 interface IFSCrewLeaderItem {
   ResourceSeq: number;
+  ResourceCrewLeaderSeq: number;
   ResourceId: string;
   ValidFrom: string;
   ValidTo: string;
@@ -51,17 +53,40 @@ interface IFSCrewLeaderResponse {
  */
 export async function getCrewsFromIFS(): Promise<IFSCrewItem[]> {
   const baseUrl = getIFSApiBaseUrl();
-  const { resourceGroupSeq } = ifsCloudConfig;
+  const { resourceGroupSeqCrews } = ifsCloudConfig;
+
+  // Validate config
+  if (!resourceGroupSeqCrews || isNaN(resourceGroupSeqCrews)) {
+    throw new Error(`Invalid resourceGroupSeqCrews: ${resourceGroupSeqCrews}. Check NEXT_PUBLIC_IFS_RESOURCE_GROUP_SEQ_CREWS in .env.local`);
+  }
 
   // Manual URL building to avoid $ encoding
+  // Note: encodeURIComponent encodes spaces as %20, which should work for OData
   const select = 'ResourceSeq,ResourceId,Description';
-  const filter = encodeURIComponent(`ResourceParentSeq eq ${resourceGroupSeq}`);
+  const filterValue = `ResourceParentSeq eq ${resourceGroupSeqCrews}`;
+  // Encode only the filter value, not the $filter= part
+  const encodedFilter = encodeURIComponent(filterValue);
   
-  const url = `${baseUrl}/ResourceCrewHandling.svc/ResourceSet?$count=true&$select=${select}&$filter=${filter}`;
+  // Construct URL manually to ensure $ signs are not encoded
+  // Format matches Postman: ResourceParentSeq eq {value} (no parentheses for single condition)
+  const url = `${baseUrl}/ResourceCrewHandling.svc/ResourceSet?$count=true&$select=${select}&$filter=${encodedFilter}`;
 
-  console.debug('Fetching crews from IFS Cloud...');
-  const response = await ifsGet<IFSCrewResponse>(url);
-  return response.value;
+  console.debug('[IFS Crews] Fetching crews from IFS Cloud...');
+  console.debug(`[IFS Crews] Base URL: ${baseUrl}`);
+  console.debug(`[IFS Crews] ResourceGroupSeqCrews: ${resourceGroupSeqCrews} (type: ${typeof resourceGroupSeqCrews})`);
+  console.debug(`[IFS Crews] Filter (raw): ${filterValue}`);
+  console.debug(`[IFS Crews] Filter (encoded): ${encodedFilter}`);
+  console.debug(`[IFS Crews] Full URL: ${url}`);
+
+  try {
+    const response = await ifsGet<IFSCrewResponse>(url);
+    console.debug(`[IFS Crews] Successfully retrieved ${response.value.length} crews`);
+    return response.value;
+  } catch (error) {
+    console.error('[IFS Crews] Error in getCrewsFromIFS:', error);
+    // Re-throw with more context
+    throw new Error(`Failed to fetch crews: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 /**
@@ -71,7 +96,7 @@ export async function getCrewsFromIFS(): Promise<IFSCrewItem[]> {
 export async function getCrewMembershipsFromIFS(resourceSeq: number): Promise<IFSCrewMemberItem[]> {
   const baseUrl = getIFSApiBaseUrl();
 
-  const select = 'ResourceSeq,ResourceId,PeriodStart,PeriodEnd';
+  const select = 'ResourceSeq,ResourceMemberSeq,ResourceId,PeriodStart,PeriodEnd';
   const url = `${baseUrl}/ResourceCrewHandling.svc/ResourceSet(ResourceSeq=${resourceSeq})/ResourceCrewMembersArray?$count=true&$select=${select}`;
 
   console.debug(`Fetching crew memberships for ResourceSeq ${resourceSeq} from IFS Cloud...`);
@@ -86,7 +111,7 @@ export async function getCrewMembershipsFromIFS(resourceSeq: number): Promise<IF
 export async function getCrewLeadersFromIFS(resourceSeq: number): Promise<IFSCrewLeaderItem[]> {
   const baseUrl = getIFSApiBaseUrl();
 
-  const select = 'ResourceSeq,ResourceId,ValidFrom,ValidTo';
+  const select = 'ResourceSeq,ResourceCrewLeaderSeq,ResourceId,ValidFrom,ValidTo';
   const url = `${baseUrl}/ResourceCrewHandling.svc/ResourceCrewSet(ResourceSeq=${resourceSeq})/ResourceCrewLeadersArray?$count=true&$select=${select}`;
 
   console.debug(`Fetching crew leaders for ResourceSeq ${resourceSeq} from IFS Cloud...`);

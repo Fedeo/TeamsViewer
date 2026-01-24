@@ -36,7 +36,7 @@ export async function authenticateIFSCloud(): Promise<string> {
   formData.append('client_id', ifsCloudConfig.clientId);
   formData.append('client_secret', ifsCloudConfig.clientSecret);
   formData.append('resource', ifsCloudConfig.clientId);
-  formData.append('scope', 'openid');
+  formData.append('scope', 'openid microprofile-jwt');
   formData.append('username', ifsCloudConfig.username);
   formData.append('password', ifsCloudConfig.password);
   formData.append('grant_type', 'password');
@@ -122,14 +122,16 @@ export async function getIFSRequestHeaders(): Promise<HeadersInit> {
   
   return {
     'Content-Type': 'application/json; charset=utf-8',
+    'Accept': 'application/json;odata.metadata=full;IEEE754Compatible=true',
     'Authorization': token,
   };
 }
 
 /**
  * Make an authenticated GET request to IFS Cloud API
+ * Automatically retries with fresh authentication on 401 errors
  */
-export async function ifsGet<T>(endpoint: string): Promise<T> {
+export async function ifsGet<T>(endpoint: string, retryOn401: boolean = true): Promise<T> {
   const headers = await getIFSRequestHeaders();
   
   // Debug: Log request details
@@ -145,8 +147,26 @@ export async function ifsGet<T>(endpoint: string): Promise<T> {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error(`IFS API GET failed: ${response.status} - ${errorBody}`);
-    throw new Error(`IFS API GET failed: ${response.status} - ${errorBody}`);
+    const errorText = errorBody || `No error body (status: ${response.status})`;
+    console.error(`[IFS GET] Request failed: ${response.status}`);
+    console.error(`[IFS GET] URL: ${endpoint}`);
+    console.error(`[IFS GET] Error body: ${errorText}`);
+    
+    // Log headers for debugging (but not the full token)
+    const authHeader = headers['Authorization'];
+    console.error(`[IFS GET] Authorization header present: ${!!authHeader}, length: ${authHeader?.length || 0}`);
+    
+    // If 401 and we haven't retried yet, clear token and retry once
+    if (response.status === 401 && retryOn401) {
+      console.debug('[IFS GET] 401 error detected, clearing token and retrying with fresh authentication...');
+      clearIFSToken();
+      
+      // Retry with fresh authentication (only once)
+      console.debug('[IFS GET] Retrying request...');
+      return ifsGet<T>(endpoint, false);
+    }
+    
+    throw new Error(`IFS API GET failed: ${response.status} - ${errorText}`);
   }
 
   return response.json();

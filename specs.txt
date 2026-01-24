@@ -69,3 +69,9 @@ using the same configurations for header and authorizations build the following 
 2) API call to get CrewMemberships (without leader data) using "20 - GetCrewMembership" postman call. Replace the ResourceSeq 2589 in the url with a parameter than can be passed to function. Create a Unit Test for it and a url where the json data can be accessed using ResourceSeq=2589 as parameter for the test and url.
 3) API call to get Crew Leaders using "20 - GetCrewMembership" postman call.Replace the ResourceSeq 2589 in the url with a parameter than can be passed to function. Create a Unit Test for it and a url where the json data can be accessed using ResourceSeq=2589 as parameter for the test and url.
 Do not replace any call from the scheduler to use real data until I have manually verified the data retrived from the tests are correct.
+
+adjust the API call for membership to obtain also the field ResourceMemberSeq. Adjust also url and unit test.
+adjust the API call for leadershio to obtain also the field ResourceCrewLeaderSeq. Adjust also url and unit test.
+
+
+Change the function to define the teams as follow:
