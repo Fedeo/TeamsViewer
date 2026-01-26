@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUIStore, ZOOM_LEVELS } from '@/lib/store/ui-store';
@@ -10,6 +10,7 @@ import styles from './TopMenu.module.css';
 export function TopMenu() {
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { 
     viewRange, 
     navigateWeeks, 
@@ -17,12 +18,24 @@ export function TopMenu() {
     zoomIn, 
     zoomOut, 
     resetZoom,
-    hasUnsavedChanges,
     isSyncing,
     hasValidationWarnings,
     startSync,
     finishSync,
   } = useUIStore();
+
+  // Check for unsaved changes from API change tracking
+  useEffect(() => {
+    const checkChanges = async () => {
+      const { api } = await import('@/lib/api/client');
+      setHasUnsavedChanges(api.hasUnsavedChanges());
+    };
+    
+    checkChanges();
+    // Check periodically (every 500ms) for changes
+    const interval = setInterval(checkChanges, 500);
+    return () => clearInterval(interval);
+  }, []);
 
   const canZoomIn = zoomIndex < ZOOM_LEVELS.length - 1;
   const canZoomOut = zoomIndex > 0;
@@ -35,11 +48,21 @@ export function TopMenu() {
     
     startSync();
     
-    // TODO: Implement actual IFS Cloud sync
-    // For now, simulate a network request
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    finishSync();
+    try {
+      // TODO: Implement actual IFS Cloud sync
+      // For now, simulate a network request
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      // After successful sync, clear change tracking
+      const { api } = await import('@/lib/api/client');
+      api.clearChangeTracking();
+      
+      finishSync();
+      setHasUnsavedChanges(false);
+    } catch (error) {
+      console.error('[TopMenu] Sync failed:', error);
+      finishSync();
+    }
   };
 
   const handleRefresh = async () => {
@@ -47,6 +70,10 @@ export function TopMenu() {
     
     setIsRefreshing(true);
     try {
+      // Reset working state so it re-initializes from IFS Cloud
+      const { api } = await import('@/lib/api/client');
+      api.resetWorkingState();
+      
       // Force immediate refetch by invalidating and refetching
       await queryClient.invalidateQueries({ 
         queryKey: queryKeys.scheduler.all,

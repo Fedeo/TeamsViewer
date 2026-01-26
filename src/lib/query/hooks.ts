@@ -95,31 +95,56 @@ export function useUpdateAssignment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: UpdateAssignmentInput) => api.updateAssignment(input),
+    mutationFn: (input: UpdateAssignmentInput) => {
+      console.log('[Mutation] updateAssignment called with:', input);
+      return api.updateAssignment(input);
+    },
     onMutate: async (updatedAssignment) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.scheduler.all });
 
       const previousData = queryClient.getQueryData(queryKeys.scheduler.all);
 
       queryClient.setQueryData(queryKeys.scheduler.all, (old: Awaited<ReturnType<typeof api.getSchedulerData>> | undefined) => {
-        if (!old) return old;
-        return {
+        if (!old) {
+          console.warn('[Mutation] No existing data to update');
+          return old;
+        }
+        const updated = {
           ...old,
-          assignments: old.assignments.map((a) =>
-            a.id === updatedAssignment.id ? { ...a, ...updatedAssignment } : a
-          ),
+          assignments: old.assignments.map((a) => {
+            if (a.id === updatedAssignment.id) {
+              const merged = { ...a, ...updatedAssignment };
+              console.log('[Mutation] Optimistically updating assignment:', {
+                id: a.id,
+                oldStart: a.start,
+                oldEnd: a.end,
+                newStart: merged.start,
+                newEnd: merged.end,
+              });
+              return merged;
+            }
+            return a;
+          }),
         };
+        return updated;
       });
 
       return { previousData };
     },
-    onError: (_err, _updatedAssignment, context) => {
+    onSuccess: (data) => {
+      console.log('[Mutation] updateAssignment succeeded:', data);
+    },
+    onError: (err, _updatedAssignment, context) => {
+      console.error('[Mutation] updateAssignment failed:', err);
       if (context?.previousData) {
         queryClient.setQueryData(queryKeys.scheduler.all, context.previousData);
+        console.log('[Mutation] Rolled back to previous data');
       }
     },
     onSettled: () => {
+      // Invalidate to refetch from working state
       queryClient.invalidateQueries({ queryKey: queryKeys.scheduler.all });
+      console.log('[Mutation] Invalidated scheduler query');
     },
   });
 }

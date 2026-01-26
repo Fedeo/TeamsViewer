@@ -77,3 +77,5 @@ adjust the API call for leadershio to obtain also the field ResourceCrewLeaderSe
 Now that all API Calls are working let's adjust the scheduler/gantt to use the data from the API like this:
 1) All teams are retrieved by the GetCrews API
 2) For each team from point 1) use the ResourceSeq to get the membership to that team using getCrewMembers API. To understand if that membership is also a leader call the getCrewLeaders API for the same ResourceSeq and check if there is an item for the same resource_id and validFrom and ValidTo
+
+After adding the API calls to retrieve real data all the logic that was implemented before with mock data to add members, change dates, add team is not working anymore but we need all these functionalities. I would like to have these functionalities working again so that when data are loaded from the API those are stored in local variables (similar to mockTechnicians: Resource[], mockTeams: Team[], mockAssignments: Assignment[]) and everytime something is added such variables are modified as before. Basically local variables will hold a temporary state due to all changes done to the team from the user.

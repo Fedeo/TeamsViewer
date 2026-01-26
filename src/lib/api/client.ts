@@ -29,7 +29,7 @@ console.log(`[API Client] USE_IFS_CLOUD = ${USE_IFS_CLOUD} (env: ${process.env.N
 let cachedIFSTechnicians: Resource[] | null = null;
 
 // ============================================================================
-// MOCK DATA - Will be replaced by IFS Cloud API responses
+// MOCK DATA - Default/fallback data
 // ============================================================================
 
 const mockTechnicians: Resource[] = [
@@ -48,7 +48,7 @@ const mockTeams: Team[] = [
   { id: 'team-2', name: 'Team2', description: 'Secondary support team', color: '#10B981', createdAt: '2024-01-15T00:00:00Z' },
 ];
 
-let mockAssignments: Assignment[] = [
+const mockAssignments: Assignment[] = [
   { id: 'assign-001', resourceId: 'tech-001', teamId: 'team-1', start: '2026-01-20T00:00:00Z', end: '2026-02-05T00:00:00Z', isTeamLeader: false },
   { id: 'assign-001b', resourceId: 'tech-001', teamId: 'team-1', start: '2026-02-15T00:00:00Z', end: '2026-02-28T00:00:00Z', isTeamLeader: false }, // James Wilson second period
   { id: 'assign-002', resourceId: 'tech-003', teamId: 'team-1', start: '2026-01-22T00:00:00Z', end: '2026-02-10T00:00:00Z', isTeamLeader: false },
@@ -56,6 +56,30 @@ let mockAssignments: Assignment[] = [
   { id: 'assign-004', resourceId: 'tech-002', teamId: 'team-2', start: '2026-01-25T00:00:00Z', end: '2026-02-20T00:00:00Z', isTeamLeader: true },
   { id: 'assign-005', resourceId: 'tech-006', teamId: 'team-2', start: '2026-01-15T00:00:00Z', end: '2026-03-01T00:00:00Z', isTeamLeader: false },
 ];
+
+// ============================================================================
+// WORKING STATE - Local variables that hold the current working data
+// These are initialized from IFS Cloud or mock data and modified by mutations
+// ============================================================================
+
+// Working state variables - initialized from API or mock data
+let workingTeams: Team[] = [...mockTeams];
+let workingAssignments: Assignment[] = [...mockAssignments];
+let isWorkingStateInitialized = false; // Track if we've loaded data from IFS Cloud
+
+// ============================================================================
+// CHANGE TRACKING - Track what has been modified for future IFS Cloud sync
+// ============================================================================
+
+// Original state from IFS Cloud (snapshot when initialized)
+let originalTeams: Team[] = [];
+let originalAssignments: Assignment[] = [];
+
+// Change tracking - IDs of entities that have been modified
+let changedAssignments = new Set<string>(); // IDs of assignments that were created or updated
+let changedTeams = new Set<string>(); // IDs of teams that were created or updated
+let deletedAssignments = new Set<string>(); // IDs of assignments that were deleted
+let deletedTeams = new Set<string>(); // IDs of teams that were deleted
 
 // ============================================================================
 // API HELPERS
@@ -85,13 +109,14 @@ function isLeaderForPeriod(
 }
 
 // Find conflicting team leader assignments
+// Uses workingAssignments (current state) instead of mockAssignments
 function findConflictingTeamLeader(
   teamId: string,
   start: Date,
   end: Date,
   excludeAssignmentId?: string
 ): Assignment | undefined {
-  return mockAssignments.find((a) => {
+  return workingAssignments.find((a) => {
     if (a.teamId !== teamId) return false;
     if (!a.isTeamLeader) return false;
     if (excludeAssignmentId && a.id === excludeAssignmentId) return false;
@@ -153,7 +178,7 @@ export const api = {
    */
   async getTeams(): Promise<Team[]> {
     await delay(200);
-    return [...mockTeams];
+    return [...workingTeams];
   },
 
   /**
@@ -205,7 +230,7 @@ export const api = {
    */
   async getAssignments(): Promise<Assignment[]> {
     await delay(200);
-    return [...mockAssignments];
+    return [...workingAssignments];
   },
 
   /**
@@ -225,11 +250,15 @@ export const api = {
     const conflict = findConflictingTeamLeader(teamId, startDate, endDate, excludeAssignmentId);
     
     if (conflict) {
-      const conflictTech = mockTechnicians.find((t) => t.id === conflict.resourceId);
+      // Try to find resource in working technicians (from IFS or mock)
+      const allResources = USE_IFS_CLOUD && cachedIFSTechnicians 
+        ? cachedIFSTechnicians 
+        : mockTechnicians;
+      const conflictTech = allResources.find((t) => t.id === conflict.resourceId);
       return {
         valid: false,
         conflictingAssignment: conflict,
-        message: `${conflictTech?.description || 'Unknown'} is already Team Leader during this period`,
+        message: `${conflictTech?.description || conflict.resourceId || 'Unknown'} is already Team Leader during this period`,
       };
     }
     
@@ -259,7 +288,11 @@ export const api = {
       isTeamLeader: input.isTeamLeader || false,
       id: `assign-${Date.now()}`,
     };
-    mockAssignments.push(newAssignment);
+    // Add to working state (not mock)
+    workingAssignments.push(newAssignment);
+    // Track as changed (new assignment)
+    changedAssignments.add(newAssignment.id);
+    console.log(`[API] Created assignment ${newAssignment.id} for resource ${newAssignment.resourceId} in team ${newAssignment.teamId}`);
     return newAssignment;
   },
 
@@ -269,15 +302,33 @@ export const api = {
   async updateAssignment(input: UpdateAssignmentInput): Promise<Assignment> {
     await delay(300);
     
-    const index = mockAssignments.findIndex((a) => a.id === input.id);
+    console.log('[API] updateAssignment called with input:', input);
+    console.log('[API] Current workingAssignments count:', workingAssignments.length);
+    
+    const index = workingAssignments.findIndex((a) => a.id === input.id);
     if (index === -1) {
-      throw new Error('Assignment not found');
+      console.error('[API] Assignment not found in workingAssignments:', input.id);
+      console.error('[API] Available assignment IDs:', workingAssignments.map(a => a.id).slice(0, 10));
+      throw new Error(`Assignment not found: ${input.id}`);
     }
     
-    const existing = mockAssignments[index];
+    const existing = workingAssignments[index];
+    console.log('[API] Found existing assignment:', {
+      id: existing.id,
+      start: existing.start,
+      end: existing.end,
+      isTeamLeader: existing.isTeamLeader,
+    });
+    
     const newStart = input.start || existing.start;
     const newEnd = input.end || existing.end;
     const newIsLeader = input.isTeamLeader !== undefined ? input.isTeamLeader : existing.isTeamLeader;
+    
+    console.log('[API] Calculated new values:', {
+      newStart,
+      newEnd,
+      newIsLeader,
+    });
     
     // Validate team leader if setting as leader or changing dates while being leader
     if (newIsLeader) {
@@ -288,6 +339,7 @@ export const api = {
         input.id
       );
       if (!validation.valid) {
+        console.error('[API] Team leader validation failed:', validation.message);
         throw new Error(validation.message || 'Team leader conflict');
       }
     }
@@ -297,7 +349,23 @@ export const api = {
       ...input,
       isTeamLeader: newIsLeader,
     };
-    mockAssignments[index] = updated;
+    
+    console.log('[API] Updated assignment object:', {
+      id: updated.id,
+      start: updated.start,
+      end: updated.end,
+      isTeamLeader: updated.isTeamLeader,
+    });
+    
+    // Update working state (not mock)
+    workingAssignments[index] = updated;
+    // Track as changed (updated assignment)
+    changedAssignments.add(updated.id);
+    // Remove from deleted if it was previously deleted (undo delete scenario)
+    deletedAssignments.delete(updated.id);
+    console.log(`[API] Updated assignment ${updated.id} in workingAssignments array`);
+    console.log('[API] Updated workingAssignments count:', workingAssignments.length);
+    
     return updated;
   },
 
@@ -306,7 +374,22 @@ export const api = {
    */
   async deleteAssignment(id: string): Promise<void> {
     await delay(200);
-    mockAssignments = mockAssignments.filter((a) => a.id !== id);
+    const beforeCount = workingAssignments.length;
+    const assignment = workingAssignments.find(a => a.id === id);
+    
+    // Check if this assignment existed in original state (from IFS Cloud)
+    const wasInOriginal = originalAssignments.some(a => a.id === id);
+    
+    workingAssignments = workingAssignments.filter((a) => a.id !== id);
+    
+    if (wasInOriginal) {
+      // Was in original state, so mark as deleted for sync
+      deletedAssignments.add(id);
+    }
+    // Remove from changed if it was tracked as changed
+    changedAssignments.delete(id);
+    
+    console.log(`[API] Deleted assignment ${id} (${beforeCount} -> ${workingAssignments.length} assignments)`);
   },
 
   /**
@@ -319,7 +402,11 @@ export const api = {
       id: `team-${Date.now()}`,
       createdAt: new Date().toISOString(),
     };
-    mockTeams.push(newTeam);
+    // Add to working state (not mock)
+    workingTeams.push(newTeam);
+    // Track as changed (new team)
+    changedTeams.add(newTeam.id);
+    console.log(`[API] Created team ${newTeam.id} (${newTeam.name})`);
     return newTeam;
   },
 
@@ -328,10 +415,33 @@ export const api = {
    */
   async deleteTeam(id: string): Promise<void> {
     await delay(200);
-    const index = mockTeams.findIndex((t) => t.id === id);
+    const index = workingTeams.findIndex((t) => t.id === id);
     if (index !== -1) {
-      mockTeams.splice(index, 1);
-      mockAssignments = mockAssignments.filter((a) => a.teamId !== id);
+      const team = workingTeams[index];
+      const wasInOriginal = originalTeams.some(t => t.id === id);
+      
+      workingTeams.splice(index, 1);
+      
+      // Track deleted assignments for this team
+      const teamAssignments = workingAssignments.filter((a) => a.teamId === id);
+      teamAssignments.forEach(assignment => {
+        const wasInOriginal = originalAssignments.some(a => a.id === assignment.id);
+        if (wasInOriginal) {
+          deletedAssignments.add(assignment.id);
+        }
+        changedAssignments.delete(assignment.id);
+      });
+      
+      workingAssignments = workingAssignments.filter((a) => a.teamId !== id);
+      
+      if (wasInOriginal) {
+        // Was in original state, so mark as deleted for sync
+        deletedTeams.add(id);
+      }
+      // Remove from changed if it was tracked as changed
+      changedTeams.delete(id);
+      
+      console.log(`[API] Deleted team ${id} and its assignments`);
     }
   },
 
@@ -467,7 +577,98 @@ export const api = {
   },
 
   /**
+   * Reset working state (used when refreshing data from IFS Cloud)
+   * This will cause getSchedulerData to re-initialize from IFS Cloud
+   */
+  resetWorkingState(): void {
+    isWorkingStateInitialized = false;
+    // Clear change tracking when resetting
+    changedAssignments.clear();
+    changedTeams.clear();
+    deletedAssignments.clear();
+    deletedTeams.clear();
+    originalTeams = [];
+    originalAssignments = [];
+    console.log('[API] Working state reset - will re-initialize on next getSchedulerData call');
+  },
+
+  /**
+   * Check if there are any unsaved changes
+   */
+  hasUnsavedChanges(): boolean {
+    return changedAssignments.size > 0 || 
+           changedTeams.size > 0 || 
+           deletedAssignments.size > 0 || 
+           deletedTeams.size > 0;
+  },
+
+  /**
+   * Get summary of changes for sync preview
+   */
+  getChangeSummary(): {
+    createdAssignments: Assignment[];
+    updatedAssignments: Assignment[];
+    deletedAssignments: Assignment[];
+    createdTeams: Team[];
+    updatedTeams: Team[];
+    deletedTeams: Team[];
+  } {
+    const createdAssignments = workingAssignments
+      .filter(a => changedAssignments.has(a.id) && !originalAssignments.some(oa => oa.id === a.id))
+      .map(id => workingAssignments.find(a => a.id === id)!)
+      .filter(Boolean);
+    
+    const updatedAssignments = workingAssignments
+      .filter(a => changedAssignments.has(a.id) && originalAssignments.some(oa => oa.id === a.id))
+      .map(id => workingAssignments.find(a => a.id === id)!)
+      .filter(Boolean);
+    
+    const deletedAssignments = Array.from(deletedAssignments)
+      .map(id => originalAssignments.find(a => a.id === id))
+      .filter(Boolean) as Assignment[];
+    
+    const createdTeams = workingTeams
+      .filter(t => changedTeams.has(t.id) && !originalTeams.some(ot => ot.id === t.id))
+      .map(id => workingTeams.find(t => t.id === id)!)
+      .filter(Boolean);
+    
+    const updatedTeams = workingTeams
+      .filter(t => changedTeams.has(t.id) && originalTeams.some(ot => ot.id === t.id))
+      .map(id => workingTeams.find(t => t.id === id)!)
+      .filter(Boolean);
+    
+    const deletedTeams = Array.from(deletedTeams)
+      .map(id => originalTeams.find(t => t.id === id))
+      .filter(Boolean) as Team[];
+    
+    return {
+      createdAssignments,
+      updatedAssignments,
+      deletedAssignments,
+      createdTeams,
+      updatedTeams,
+      deletedTeams,
+    };
+  },
+
+  /**
+   * Clear change tracking (called after successful sync to IFS Cloud)
+   */
+  clearChangeTracking(): void {
+    // Update original state to current state (new baseline)
+    originalTeams = [...workingTeams];
+    originalAssignments = [...workingAssignments];
+    // Clear change tracking
+    changedAssignments.clear();
+    changedTeams.clear();
+    deletedAssignments.clear();
+    deletedTeams.clear();
+    console.log('[API] Change tracking cleared after successful sync');
+  },
+
+  /**
    * Get all scheduler data in one call
+   * Returns data from working state (which is initialized from IFS Cloud or mock data)
    */
   async getSchedulerData(): Promise<{
     resources: Resource[];
@@ -481,31 +682,54 @@ export const api = {
     const resources = await this.getTechnicians();
     console.log('[API] getSchedulerData got', resources.length, 'technicians');
     
-    // Use IFS Cloud APIs for crews when enabled
-    if (USE_IFS_CLOUD) {
+    // Initialize working state from IFS Cloud if enabled and not already initialized
+    if (USE_IFS_CLOUD && !isWorkingStateInitialized) {
       try {
+        console.log('[API] Initializing working state from IFS Cloud...');
         const { teams, assignments } = await this.getCrewsDataFromIFS();
-        return {
-          resources,
-          teams,
-          assignments,
-        };
+        
+        // Initialize working state with IFS Cloud data
+        workingTeams = [...teams];
+        workingAssignments = [...assignments];
+        
+        // Store original state for change tracking
+        originalTeams = [...teams];
+        originalAssignments = [...assignments];
+        
+        // Clear any previous change tracking
+        changedAssignments.clear();
+        changedTeams.clear();
+        deletedAssignments.clear();
+        deletedTeams.clear();
+        
+        isWorkingStateInitialized = true;
+        
+        console.log(`[API] Working state initialized: ${workingTeams.length} teams, ${workingAssignments.length} assignments`);
+        console.log(`[API] Original state stored for change tracking`);
       } catch (error) {
-        console.error('[API] Error fetching crews data from IFS Cloud, falling back to mock data:', error);
+        console.error('[API] Error fetching crews data from IFS Cloud, using mock data:', error);
         // Fall back to mock data if IFS Cloud fails
-        return {
-          resources,
-          teams: [...mockTeams],
-          assignments: [...mockAssignments],
-        };
+        workingTeams = [...mockTeams];
+        workingAssignments = [...mockAssignments];
+        originalTeams = [...mockTeams];
+        originalAssignments = [...mockAssignments];
+        isWorkingStateInitialized = true;
       }
+    } else if (!USE_IFS_CLOUD && !isWorkingStateInitialized) {
+      // Initialize with mock data when IFS Cloud is disabled
+      workingTeams = [...mockTeams];
+      workingAssignments = [...mockAssignments];
+      originalTeams = [...mockTeams];
+      originalAssignments = [...mockAssignments];
+      isWorkingStateInitialized = true;
+      console.log('[API] Working state initialized with mock data');
     }
     
-    // Use mock data when IFS Cloud is disabled
+    // Return data from working state
     return {
       resources,
-      teams: [...mockTeams],
-      assignments: [...mockAssignments],
+      teams: [...workingTeams],
+      assignments: [...workingAssignments],
     };
   },
 

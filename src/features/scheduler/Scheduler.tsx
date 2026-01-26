@@ -166,13 +166,26 @@ export function Scheduler() {
 
   const handleAssignmentResize = useCallback(
     (id: string, newStart: string, newEnd: string) => {
+      console.log('[Scheduler] handleAssignmentResize called:', { id, newStart, newEnd });
       // Find the assignment to preserve isTeamLeader
       const assignment = data?.assignments.find((a) => a.id === id);
+      if (!assignment) {
+        console.error('[Scheduler] Assignment not found for resize:', id);
+        return;
+      }
+      console.log('[Scheduler] Resizing assignment:', {
+        id,
+        oldStart: assignment.start,
+        oldEnd: assignment.end,
+        newStart,
+        newEnd,
+        isTeamLeader: assignment.isTeamLeader,
+      });
       updateAssignment.mutate({
         id,
         start: newStart,
         end: newEnd,
-        isTeamLeader: assignment?.isTeamLeader,
+        isTeamLeader: assignment.isTeamLeader,
       });
       markAsChanged();
     },
